@@ -1,0 +1,32 @@
+{
+  "name": "LottoZen Ultra - Numerologia Predictiva",
+  "short_name": "LottoZen",
+  "description": "Motor cosmico de 13 sistemas: numerologia, astrologia, maya, cabala, Fibonacci, Poisson y mas",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0d0521",
+  "theme_color": "#1a0b2e",
+  "scope": "/",
+  "lang": "es",
+  "categories": ["entertainment", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
