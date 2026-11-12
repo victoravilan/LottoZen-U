@@ -762,6 +762,7 @@ export interface NumberSource {
   system: string;
   value: number;
   detail: string;
+  weight: number;
 }
 
 export interface DetailedNumber {
@@ -779,7 +780,15 @@ export interface GenerationResult {
 }
 
 // Funcion auxiliar para mapear al rango de la loteria
-function mapToRange(n: number, max: number): number {
+// Para loterias standard (1..max): mapea al rango 1..max
+// Para loterias de digitos (0..9): mapea al rango 0..max
+function mapToRange(n: number, max: number, isDigit: boolean = false): number {
+  if (isDigit) {
+    // Digit-based: 0..max (typically 0..9)
+    if (n >= 0 && n <= max) return n;
+    return Math.abs(n) % (max + 1);
+  }
+  // Standard: 1..max
   if (n >= 1 && n <= max) return n;
   return ((n % max) + 1);
 }
@@ -818,26 +827,51 @@ export function generateCompleteNumbers(
   },
   seed: number
 ): GenerationResult {
-  // Importar configuracion de loteria
-  const LOTTERY_RANGES: Record<string, { main: number; bonus: number; mainCount: number; bonusCount: number }> = {
-    euromillones: { main: 50, bonus: 12, mainCount: 5, bonusCount: 2 },
-    primitiva: { main: 49, bonus: 10, mainCount: 6, bonusCount: 1 },
-    eurojackpot: { main: 50, bonus: 12, mainCount: 5, bonusCount: 2 },
-    bonoloto: { main: 49, bonus: 10, mainCount: 6, bonusCount: 1 },
+  // Configuracion completa de todas las loterias soportadas
+  const LOTTERY_RANGES: Record<string, {
+    main: number; bonus: number; mainCount: number; bonusCount: number;
+    isDigit: boolean; startFrom: number;
+  }> = {
+    euromillones:       { main: 50, bonus: 12, mainCount: 5, bonusCount: 2, isDigit: false, startFrom: 1 },
+    primitiva:          { main: 49, bonus: 10, mainCount: 6, bonusCount: 1, isDigit: false, startFrom: 1 },
+    eurojackpot:        { main: 50, bonus: 12, mainCount: 5, bonusCount: 2, isDigit: false, startFrom: 1 },
+    bonoloto:           { main: 49, bonus: 10, mainCount: 6, bonusCount: 1, isDigit: false, startFrom: 1 },
+    loteria_nacional:   { main: 9,  bonus: 55, mainCount: 5, bonusCount: 1, isDigit: true,  startFrom: 0 },
+    once_cupon:         { main: 9,  bonus: 55, mainCount: 5, bonusCount: 1, isDigit: true,  startFrom: 0 },
+    once_triplex:       { main: 9,  bonus: 0,  mainCount: 3, bonusCount: 0, isDigit: true,  startFrom: 0 },
+    once_combo:         { main: 9,  bonus: 9,  mainCount: 5, bonusCount: 1, isDigit: true,  startFrom: 0 },
+    once_eurojackpot:   { main: 50, bonus: 12, mainCount: 5, bonusCount: 2, isDigit: false, startFrom: 1 },
   };
 
   const config = LOTTERY_RANGES[lotteryId] || LOTTERY_RANGES.euromillones;
   const rng = seededRandom(seed);
   const maxNum = config.main;
+  const isDigit = config.isDigit;
+  const startFrom = config.startFrom;
   const systemsUsed: string[] = [];
 
-  // Recopilar numeros de cada sistema
+  // Normalizar pesos a escala 0-1 para scoring consistente
+  const w = {
+    numerology:  Math.max(0, weights.numerology / 100),
+    astrology:   Math.max(0, weights.astrology / 100),
+    maya:        Math.max(0, weights.maya / 100),
+    fibonacci:   Math.max(0, weights.fibonacci / 100),
+    benford:     Math.max(0, weights.benford / 100),
+    poisson:     Math.max(0, weights.poisson / 100),
+    hotNumbers:  Math.max(0, weights.hotNumbers / 100),
+    coldNumbers: Math.max(0, weights.coldNumbers / 100),
+    overdue:     Math.max(0, weights.overdue / 100),
+    biorhythm:   Math.max(0, weights.biorhythm / 100),
+    randomness:  Math.max(0, weights.randomness / 100),
+  };
+
+  // Recopilar numeros de cada sistema con peso real
   const allSources: Map<number, NumberSource[]> = new Map();
 
   function addSource(num: number, system: string, detail: string, weight: number) {
-    const mapped = mapToRange(num, maxNum);
+    const mapped = mapToRange(num, maxNum, isDigit);
     if (!allSources.has(mapped)) allSources.set(mapped, []);
-    allSources.get(mapped)!.push({ system, value: mapped, detail });
+    allSources.get(mapped)!.push({ system, value: mapped, detail, weight: Math.max(0, weight / 100) });
     if (!systemsUsed.includes(system)) systemsUsed.push(system);
   }
 
@@ -864,7 +898,7 @@ export function generateCompleteNumbers(
   });
   analysis.planetaryPositions.forEach(p => {
     addSource(p.luckyNumbers[0], 'Astrologia Planetaria',
-      `${p.plan} en ${p.sign.name} (${p.degree} grados)`, weights.astrology * 0.7);
+      `${p.planet} en ${p.sign.name} (${p.degree} grados)`, weights.astrology * 0.7);
   });
 
   // 4. MAYA TZOLKIN
@@ -937,30 +971,46 @@ export function generateCompleteNumbers(
       `Alta probabilidad de aparicion segun modelo Poisson (lambda=${historicalData.averageFrequency.toFixed(2)})`, weights.poisson * (1 - i * 0.05));
   });
 
-  // 14. SUMA OBJETIVO basada en patrones historicos
-  // El promedio de suma de numeros ganadores es un indicador estadistico
-  // Intentamos que nuestra seleccion se acerque a esa suma
+  // ============================================================
+  // SCORING: Usar pesos reales del usuario en vez de +10 fijo
+  // ============================================================
+  // Cada fuente aporta su peso normalizado (0..1) multiplicado por:
+  //   - Un factor base de 10 puntos (para escala legible)
+  //   - Bonus por coincidencia multi-sistema (sin duplicar el peso)
+  // La suma objetivo historica se usa como guia secundaria.
 
-  // Calcular puntuacion total de cada numero
   const scores: Map<number, { score: number; sources: NumberSource[] }> = new Map();
 
   for (const [num, sources] of allSources) {
     let totalScore = 0;
     for (const src of sources) {
-      // El peso se infiere del sistema: cada sistema aporta proporcionalmente
-      totalScore += 10; // Base por aparecer en cualquier sistema
+      // Peso real del sistema que produjo este numero (0..1)
+      // Base de 10 puntos * peso normalizado = contribucion real
+      totalScore += 10 * src.weight;
     }
-    // Bonus por aparecer en multiples sistemas
-    totalScore += sources.length * 5;
+    // Bonus por aparecer en multiples sistemas (convergencia cosmica)
+    // El bonus es geometrico: mas sistemas = mayor confianza
+    const multiSystemBonus = sources.length > 1
+      ? Math.pow(sources.length, 1.5) * 3
+      : 0;
+    totalScore += multiSystemBonus;
 
     scores.set(num, { score: totalScore, sources });
   }
 
-  // Agregar componente aleatorio controlado
-  for (let i = 1; i <= maxNum; i++) {
+  // Agregar componente aleatorio controlado para numeros sin fuentes
+  // Esto permite que numeros no sugeridos por sistemas tengan oportunidad
+  // de ser seleccionados, proporcional al peso de aleatoriedad del usuario
+  for (let i = startFrom; i <= maxNum; i++) {
     const existing = scores.get(i) || { score: 0, sources: [] };
-    existing.score += rng() * weights.randomness * 0.5;
+    existing.score += rng() * w.randomness * 20;
     if (!scores.has(i)) scores.set(i, existing);
+  }
+
+  // Para loterias standard, aplicar guia de suma objetivo
+  if (!isDigit && historicalData.patterns?.averageSum > 0) {
+    // Suavizar: dar bonus a combinaciones cercanas a la suma promedio
+    // (se aplica despues de seleccionar candidatos)
   }
 
   // Seleccionar los mejores numeros
@@ -989,37 +1039,51 @@ export function generateCompleteNumbers(
 
   selectedMain.sort((a, b) => a - b);
 
-  // NUMEROS BONUS (estrellas/reintegro)
+  // NUMEROS BONUS (estrellas/reintegro/serie)
   const bonusScores: Map<number, number> = new Map();
-  for (let i = 1; i <= config.bonus; i++) {
-    bonusScores.set(i, rng() * 50);
+
+  if (config.bonus > 0 && config.bonusCount > 0) {
+    // Para digit-based, el bonus (serie) es 1..bonusRange
+    // Para standard, el bonus es 1..bonusRange
+    const bonusStart = 1;
+    for (let i = bonusStart; i <= config.bonus; i++) {
+      bonusScores.set(i, rng() * 50);
+    }
+
+    // Influencia de numeros personales en bonus
+    pythNumbers.forEach(n => {
+      const mapped = mapToRange(n, config.bonus, false);
+      bonusScores.set(mapped, (bonusScores.get(mapped) || 0) + 100 * w.numerology);
+    });
+    analysis.zodiacSign.luckyNumbers.forEach(n => {
+      const mapped = mapToRange(n, config.bonus, false);
+      bonusScores.set(mapped, (bonusScores.get(mapped) || 0) + 50 * w.astrology);
+    });
+    analysis.mayanKin.luckyNumbers.forEach(n => {
+      const mapped = mapToRange(n, config.bonus, false);
+      bonusScores.set(mapped, (bonusScores.get(mapped) || 0) + 40 * w.maya);
+    });
+
+    const sortedBonus = Array.from(bonusScores.entries()).sort((a, b) => b[1] - a[1]);
+    const selectedBonus: number[] = [];
+    for (const [num] of sortedBonus) {
+      if (selectedBonus.length >= config.bonusCount) break;
+      selectedBonus.push(num);
+    }
+    selectedBonus.sort((a, b) => a - b);
+
+    return {
+      main: selectedMain,
+      bonus: selectedBonus,
+      details,
+      systemsUsed,
+    };
   }
 
-  // Influencia de numeros personales en bonus
-  pythNumbers.forEach(n => {
-    const mapped = mapToRange(n, config.bonus);
-    bonusScores.set(mapped, (bonusScores.get(mapped) || 0) + 100);
-  });
-  analysis.zodiacSign.luckyNumbers.forEach(n => {
-    const mapped = mapToRange(n, config.bonus);
-    bonusScores.set(mapped, (bonusScores.get(mapped) || 0) + 50);
-  });
-  analysis.mayanKin.luckyNumbers.forEach(n => {
-    const mapped = mapToRange(n, config.bonus);
-    bonusScores.set(mapped, (bonusScores.get(mapped) || 0) + 40);
-  });
-
-  const sortedBonus = Array.from(bonusScores.entries()).sort((a, b) => b[1] - a[1]);
-  const selectedBonus: number[] = [];
-  for (const [num] of sortedBonus) {
-    if (selectedBonus.length >= config.bonusCount) break;
-    selectedBonus.push(num);
-  }
-  selectedBonus.sort((a, b) => a - b);
-
+  // Loterias sin bonus (ej: ONCE Triplex)
   return {
     main: selectedMain,
-    bonus: selectedBonus,
+    bonus: [],
     details,
     systemsUsed,
   };

@@ -22,7 +22,7 @@ export default function Dashboard({ onNavigate }: Props) {
   if (!profile) {
     return (
       <div style={{ textAlign: 'center', padding: '40px 20px', animation: 'fadeIn 0.6s ease' }}>
-        <img src="/logo.svg" alt="LottoZen Ultra" style={{
+        <img src="./logo.svg" alt="LottoZen Ultra" style={{
           width: '120px', height: '120px', margin: '0 auto 20px', display: 'block',
           filter: 'drop-shadow(0 0 20px rgba(212, 175, 55, 0.4))',
           animation: 'float 4s ease-in-out infinite',

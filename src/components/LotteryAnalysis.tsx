@@ -7,12 +7,14 @@ import {
   getOverdueNumbers,
   getLatestResults,
   analyzePatterns,
+  getUpcomingSpecialDraws,
+  getHistoricalSpecialDraws,
 } from '../lib/lotteryData'
 import NumberBall from './NumberBall'
 
 export default function LotteryAnalysis() {
   const [selectedLottery, setSelectedLottery] = useState('euromillones')
-  const [view, setView] = useState<'frequency' | 'hotcold' | 'overdue' | 'patterns' | 'history'>('frequency')
+  const [view, setView] = useState<'frequency' | 'hotcold' | 'overdue' | 'patterns' | 'history' | 'special'>('frequency')
 
   const lottery = LOTTERY_CONFIGS.find(l => l.id === selectedLottery) || LOTTERY_CONFIGS[0]
   const frequency = calculateFrequencyAnalysis(selectedLottery)
@@ -21,6 +23,8 @@ export default function LotteryAnalysis() {
   const overdueNumbers = getOverdueNumbers(selectedLottery, 10)
   const latestResults = getLatestResults(selectedLottery, 15)
   const patterns = analyzePatterns(selectedLottery)
+  const upcomingSpecials = getUpcomingSpecialDraws()
+  const historicalSpecials = getHistoricalSpecialDraws(selectedLottery)
 
   const maxFreq = frequency.length > 0 ? frequency[0].frequency : 1
 
@@ -30,6 +34,7 @@ export default function LotteryAnalysis() {
     { id: 'overdue', label: 'Atrasados', icon: '⏰' },
     { id: 'patterns', label: 'Patrones', icon: '🔮' },
     { id: 'history', label: 'Historial', icon: '📅' },
+    { id: 'special', label: 'Sorteos Especiales', icon: '🎄' },
   ] as const
 
   return (
@@ -415,6 +420,11 @@ export default function LotteryAnalysis() {
                   <p style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: 500 }}>
                     {new Date(result.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </p>
+                  {result.special && result.specialName && (
+                    <p style={{ fontSize: '11px', color: 'var(--accent-purple-light)', fontWeight: 600 }}>
+                      {result.specialName}
+                    </p>
+                  )}
                   <p style={{ fontSize: '11px', color: 'var(--accent-gold)' }}>
                     Bote: {(result.jackpot / 1000000).toFixed(1)}M €
                   </p>
@@ -435,6 +445,149 @@ export default function LotteryAnalysis() {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Special draws view */}
+      {view === 'special' && (
+        <div style={{ animation: 'fadeIn 0.4s ease' }}>
+          {/* Upcoming special draws */}
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(139, 92, 246, 0.08))',
+            border: '1px solid var(--border-gold)',
+            borderRadius: '16px',
+            padding: '24px',
+            marginBottom: '16px',
+          }}>
+            <h3 style={{ fontSize: '16px', color: 'var(--accent-gold)', marginBottom: '16px' }}>
+              Sorteos especiales proximos
+            </h3>
+            {upcomingSpecials.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {upcomingSpecials.map((special, i) => {
+                  const specialLottery = LOTTERY_CONFIGS.find(l => l.id === special.lotteryId);
+                  return (
+                    <div
+                      key={i}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        padding: '14px 16px',
+                        background: 'var(--bg-card)',
+                        borderRadius: '12px',
+                        border: `1px solid ${specialLottery?.color || 'var(--border)'}40`,
+                        animation: `fadeIn 0.4s ease ${i * 0.08}s both`,
+                      }}
+                    >
+                      <div style={{
+                        width: '44px', height: '44px', borderRadius: '10px',
+                        background: `${specialLottery?.color || 'var(--accent-purple)'}20`,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '22px', flexShrink: 0,
+                      }}>
+                        {special.icon}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <p style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: 600 }}>
+                          {special.name}
+                        </p>
+                        <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                          {specialLottery?.name || 'Loteria'} | {special.description}
+                        </p>
+                      </div>
+                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                        <p style={{ fontSize: '12px', color: 'var(--accent-gold)', fontWeight: 600 }}>
+                          {new Date(special.date + '-2026').toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}
+                        </p>
+                        <p style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                          Bote: {(special.typicalJackpot / 1000000).toFixed(0)}M €
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p style={{ fontSize: '13px', color: 'var(--text-muted)', textAlign: 'center', padding: '20px' }}>
+                No hay sorteos especiales proximos en este momento.
+              </p>
+            )}
+          </div>
+
+          {/* Historical special draws for this lottery */}
+          {lottery.hasSpecialDraws && (
+            <div style={{
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              borderRadius: '16px',
+              padding: '24px',
+            }}>
+              <h3 style={{ fontSize: '16px', color: 'var(--accent-gold)', marginBottom: '16px' }}>
+                Historial de sorteos especiales - {lottery.name}
+              </h3>
+              {historicalSpecials.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {historicalSpecials.slice(0, 10).map((draw, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '12px 16px',
+                        background: 'var(--bg-secondary)',
+                        borderRadius: '12px',
+                        flexWrap: 'wrap',
+                        gap: '8px',
+                        animation: `fadeIn 0.3s ease ${Math.min(i * 0.05, 0.5)}s both`,
+                      }}
+                    >
+                      <div>
+                        <p style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: 500 }}>
+                          {draw.specialName || 'Sorteo Especial'}
+                        </p>
+                        <p style={{ fontSize: '11px', color: 'var(--accent-gold)' }}>
+                          {new Date(draw.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </p>
+                      </div>
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
+                        {draw.numbers.map((n, j) => (
+                          <NumberBall key={j} number={n} size="small" color={lottery.color} animated={false} />
+                        ))}
+                        {draw.stars && draw.stars.length > 0 && (
+                          <>
+                            <span style={{ color: 'var(--text-muted)', margin: '0 2px' }}>+</span>
+                            {draw.stars.map((n, j) => (
+                              <NumberBall key={`s${j}`} number={n} size="small" variant="star" color={lottery.color} animated={false} />
+                            ))}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p style={{ fontSize: '13px', color: 'var(--text-muted)', textAlign: 'center', padding: '20px' }}>
+                  No hay historial de sorteos especiales para {lottery.name}.
+                </p>
+              )}
+            </div>
+          )}
+
+          {!lottery.hasSpecialDraws && (
+            <div style={{
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              borderRadius: '16px',
+              padding: '24px',
+              textAlign: 'center',
+            }}>
+              <p style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+                {lottery.name} no tiene sorteos especiales.
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>

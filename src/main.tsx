@@ -21,7 +21,7 @@ class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasErr
       },
         React.createElement('h2', { style: { color: '#d4af37', fontFamily: 'Cinzel, serif', fontSize: '24px', marginBottom: '16px' } }, 'Error en la aplicacion'),
         React.createElement('p', { style: { color: '#b8a8d4', marginBottom: '16px' } }, this.state.error),
-        React.createElement('a', { href: '/landing.html', style: { color: '#a78bfa' } }, 'Ir a la pagina de inicio')
+        React.createElement('a', { href: './landing.html', style: { color: '#a78bfa' } }, 'Ir a la pagina de inicio')
       )
     }
     return this.props.children

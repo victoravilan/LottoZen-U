@@ -28,7 +28,7 @@ export default function Navigation({ currentPage, onNavigate }: Props) {
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <img src="/logo.svg" alt="LottoZen Ultra Logo" style={{
+            <img src="./logo.svg" alt="LottoZen Ultra Logo" style={{
               width: '48px',
               height: '48px',
               borderRadius: '12px',
