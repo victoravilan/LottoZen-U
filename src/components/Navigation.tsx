@@ -8,6 +8,7 @@ interface Props {
 const NAV_ITEMS: { id: Page; label: string; icon: string }[] = [
   { id: 'dashboard', label: 'Inicio', icon: 'M3 12l9-9 9 9M5 10v10h14V10' },
   { id: 'generator', label: 'Generar', icon: 'M12 2v20M2 12h20' },
+  { id: 'strategy', label: 'Estrategia', icon: 'M9 11l3 3L22 4M2 12l3 3 3-3' },
   { id: 'analysis', label: 'Analisis', icon: 'M3 3v18h18M7 14l4-4 4 4 4-4' },
   { id: 'profile', label: 'Perfil', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7' },
 ]

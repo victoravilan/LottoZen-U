@@ -4,10 +4,11 @@ import Navigation from './components/Navigation'
 import Dashboard from './components/Dashboard'
 import NumberGenerator from './components/NumberGenerator'
 import LotteryAnalysis from './components/LotteryAnalysis'
+import PlayOptimizer from './components/PlayOptimizer'
 import UserProfile from './components/UserProfile'
 import { getUserProfile } from './lib/storage'
 
-export type Page = 'dashboard' | 'generator' | 'analysis' | 'profile'
+export type Page = 'dashboard' | 'generator' | 'strategy' | 'analysis' | 'profile'
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>('dashboard')
@@ -30,6 +31,7 @@ export default function App() {
         <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px 16px 80px' }}>
           {currentPage === 'dashboard' && <Dashboard onNavigate={setCurrentPage} />}
           {currentPage === 'generator' && <NumberGenerator />}
+          {currentPage === 'strategy' && <PlayOptimizer />}
           {currentPage === 'analysis' && <LotteryAnalysis />}
           {currentPage === 'profile' && <UserProfile onSave={() => setCurrentPage('dashboard')} />}
         </main>

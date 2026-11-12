@@ -163,17 +163,31 @@ export default function Dashboard({ onNavigate }: Props) {
         <p style={{ color: 'var(--text-secondary)', marginBottom: '20px', fontSize: '14px' }}>
           13 sistemas integrados | Resumen detallado por numero | {lottery.name}
         </p>
-        <button onClick={() => onNavigate('generator')}
-          style={{
-            padding: '14px 36px',
-            background: 'linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light))',
-            color: '#0d0521', border: 'none', borderRadius: '12px',
-            fontSize: '16px', fontWeight: 700, cursor: 'pointer', transition: 'transform 0.2s ease',
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
-          \u2726 Generar Ahora
-        </button>
+        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <button onClick={() => onNavigate('generator')}
+            style={{
+              padding: '14px 36px',
+              background: 'linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light))',
+              color: '#0d0521', border: 'none', borderRadius: '12px',
+              fontSize: '16px', fontWeight: 700, cursor: 'pointer', transition: 'transform 0.2s ease',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+            {'\u2726'} Generar Ahora
+          </button>
+          <button onClick={() => onNavigate('strategy')}
+            style={{
+              padding: '14px 36px',
+              background: 'transparent',
+              color: 'var(--accent-purple-light)', border: '2px solid var(--accent-purple)',
+              borderRadius: '12px',
+              fontSize: '16px', fontWeight: 700, cursor: 'pointer', transition: 'transform 0.2s ease',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+            {'\u25C8'} Ver mi Estrategia
+          </button>
+        </div>
       </section>
 
       {/* Latest results */}
