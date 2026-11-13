@@ -543,25 +543,27 @@ export function poissonProbability(k: number, lambda: number): number {
 export function getPoissonExpectedNumbers(
   averageFrequency: number,
   maxRange: number,
-  count: number
+  count: number,
+  isDigit: boolean = false
 ): number[] {
+  // Para cada numero, calculamos una probabilidad diferenciada
+  // usando la frecuencia historica promedio como lambda base
+  // pero variando por numero para evitar resultados homogeneos
   const result: { number: number; probability: number }[] = [];
+  const startN = isDigit ? 0 : 1;
+  const lambda = Math.max(0.1, averageFrequency);
 
-  for (let n = 1; n <= maxRange; n++) {
-    // Probabilidad de que aparezca al menos una vez
-    const prob = 1 - poissonProbability(0, averageFrequency);
-    result.push({ number: n, probability: prob });
+  for (let n = startN; n <= maxRange; n++) {
+    // Probabilidad base de Poisson de aparecer al menos una vez
+    const baseProb = 1 - poissonProbability(0, lambda);
+    // Variacion por numero: usa propiedades del propio numero
+    // para crear diferenciacion natural entre numeros
+    const numFactor = Math.sin(n * 0.37 + lambda * 0.13) * 0.15
+                    + Math.cos(n * 0.71) * 0.10;
+    result.push({ number: n, probability: Math.max(0.01, baseProb + numFactor) });
   }
 
-  // Ordenar por probabilidad y tomar los mejores
-  // Pero agregamos variacion basada en el numero mismo
-  result.sort((a, b) => {
-    // Mezclar probabilidad con un factor del propio numero para diversificar
-    const scoreA = a.probability + (Math.sin(a.number * GOLDEN_RATIO) * 0.1);
-    const scoreB = b.probability + (Math.sin(b.number * GOLDEN_RATIO) * 0.1);
-    return scoreB - scoreA;
-  });
-
+  result.sort((a, b) => b.probability - a.probability);
   return result.slice(0, count).map(r => r.number);
 }
 
@@ -780,7 +782,7 @@ export interface GenerationResult {
 }
 
 // Funcion auxiliar para mapear al rango de la loteria
-// Para loterias standard (1..max): mapea al rango 1..max
+// Para loterias standard (1..max): distribuye uniformemente en 1..max
 // Para loterias de digitos (0..9): mapea al rango 0..max
 function mapToRange(n: number, max: number, isDigit: boolean = false): number {
   if (isDigit) {
@@ -789,15 +791,42 @@ function mapToRange(n: number, max: number, isDigit: boolean = false): number {
     return Math.abs(n) % (max + 1);
   }
   // Standard: 1..max
+  // Usar modulo distribuido para evitar que todo se concentre en 1-9
   if (n >= 1 && n <= max) return n;
-  return ((n % max) + 1);
+  const mapped = ((Math.abs(n) - 1) % max) + 1;
+  return mapped;
 }
 
-function seededRandom(seed: number): () => number {
+// PRNG criptografico - usa crypto.getRandomValues cuando esta disponible
+// Para entornos sin crypto (Android WebView antiguo), usa Math.random con mezcla
+function createSecureRng(seed: number): () => number {
+  // Mezclar semilla con entropia real del momento
   let state = Math.abs(seed) || 1;
+  // Mezclar con timestamp de alta resolucion para mayor entropia
+  const timeEntropy = (typeof performance !== 'undefined' && performance.now)
+    ? performance.now()
+    : Date.now();
+  state = (state * 31 + Math.floor(timeEntropy * 1000) + Math.floor(Math.random() * 1000000)) >>> 0;
+  state = state || 1;
+
+  // Intentar usar crypto para entropia adicional en cada llamada
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    const buf = new Uint32Array(1);
+    return () => {
+      crypto.getRandomValues(buf);
+      // Mezclar crypto con LCG para mayor dispersion
+      state = (state * 1664525 + 1013904223 + buf[0]) >>> 0;
+      return (state & 0x7FFFFFFF) / 0x7FFFFFFF;
+    };
+  }
+
+  // Fallback: LCG mejorado (xorshift32) con buena entropia inicial
   return () => {
-    state = (state * 9301 + 49297) % 233280;
-    return state / 233280;
+    state ^= state << 13;
+    state ^= state >>> 17;
+    state ^= state << 5;
+    state = state >>> 0;
+    return state / 4294967296;
   };
 }
 
@@ -844,25 +873,26 @@ export function generateCompleteNumbers(
   };
 
   const config = LOTTERY_RANGES[lotteryId] || LOTTERY_RANGES.euromillones;
-  const rng = seededRandom(seed);
+  // PRNG seguro con entropia real - cambia en cada llamada
+  const rng = createSecureRng(seed);
   const maxNum = config.main;
   const isDigit = config.isDigit;
   const startFrom = config.startFrom;
   const systemsUsed: string[] = [];
 
-  // Normalizar pesos a escala 0-1 para scoring consistente
+  // Normalizar pesos a escala 0-1 (minimo 0.01 para evitar pesos cero)
   const w = {
-    numerology:  Math.max(0, weights.numerology / 100),
-    astrology:   Math.max(0, weights.astrology / 100),
-    maya:        Math.max(0, weights.maya / 100),
-    fibonacci:   Math.max(0, weights.fibonacci / 100),
-    benford:     Math.max(0, weights.benford / 100),
-    poisson:     Math.max(0, weights.poisson / 100),
-    hotNumbers:  Math.max(0, weights.hotNumbers / 100),
-    coldNumbers: Math.max(0, weights.coldNumbers / 100),
-    overdue:     Math.max(0, weights.overdue / 100),
-    biorhythm:   Math.max(0, weights.biorhythm / 100),
-    randomness:  Math.max(0, weights.randomness / 100),
+    numerology:  Math.max(0.01, weights.numerology / 100),
+    astrology:   Math.max(0.01, weights.astrology / 100),
+    maya:        Math.max(0.01, weights.maya / 100),
+    fibonacci:   Math.max(0.01, weights.fibonacci / 100),
+    benford:     Math.max(0.01, weights.benford / 100),
+    poisson:     Math.max(0.01, weights.poisson / 100),
+    hotNumbers:  Math.max(0.01, weights.hotNumbers / 100),
+    coldNumbers: Math.max(0.01, weights.coldNumbers / 100),
+    overdue:     Math.max(0.01, weights.overdue / 100),
+    biorhythm:   Math.max(0.01, weights.biorhythm / 100),
+    randomness:  Math.max(0.01, weights.randomness / 100),
   };
 
   // Recopilar numeros de cada sistema con peso real
@@ -875,6 +905,31 @@ export function generateCompleteNumbers(
     if (!systemsUsed.includes(system)) systemsUsed.push(system);
   }
 
+  // Para loterias standard (1-50), los sistemas cosmico producen numeros 1-9
+  // Necesitamos EXPANDIR estos al rango completo de la loteria
+  // usando derivaciones matematicas que preservan la vibracion del numero
+  function addExpandedSources(baseNum: number, system: string, detail: string, weight: number) {
+    if (isDigit) {
+      addSource(baseNum, system, detail, weight);
+      return;
+    }
+    const base = mapToRange(baseNum, maxNum, false);
+    addSource(base, system, `${detail} (directo)`, weight);
+    // Derivaciones que expanden al rango completo
+    const d1 = base + String(base).split('').reduce((s, d) => s + parseInt(d), 0);
+    if (d1 <= maxNum && d1 !== base) addSource(d1, system, `${detail} (+suma dig=${d1})`, weight * 0.6);
+    const d2 = Math.floor(base * GOLDEN_RATIO) % maxNum + 1;
+    if (d2 <= maxNum && d2 !== base) addSource(d2, system, `${detail} (aureo=${d2})`, weight * 0.5);
+    const d3 = base + 9;
+    if (d3 <= maxNum && d3 !== base) addSource(d3, system, `${detail} (+9=${d3})`, weight * 0.55);
+    const d4 = base + 18;
+    if (d4 <= maxNum && ![base, d1, d2, d3].includes(d4)) addSource(d4, system, `${detail} (+18=${d4})`, weight * 0.45);
+    const d5 = base + 27;
+    if (d5 <= maxNum && ![base, d1, d2, d3, d4].includes(d5)) addSource(d5, system, `${detail} (+27=${d5})`, weight * 0.4);
+    const d6 = base + 36;
+    if (d6 <= maxNum && ![base, d1, d2, d3, d4, d5].includes(d6)) addSource(d6, system, `${detail} (+36=${d6})`, weight * 0.35);
+  }
+
   // 1. NUMEROLOGIA PITAGORICA
   const pythNumbers = [
     analysis.lifePath, analysis.expression, analysis.soulUrge,
@@ -882,72 +937,72 @@ export function generateCompleteNumbers(
     analysis.placeNumber, analysis.personalLucky,
   ];
   pythNumbers.forEach((n, i) => {
-    const names = ['Life Path', 'Expression', 'Soul Urge', 'Personality', 'Birthday', 'Destiny', 'Place', 'Personal Lucky'];
-    addSource(n, 'Numerologia Pitagorica', `${names[i]} = ${n}: ${getNumberMeaning(n).split('.')[0]}`, weights.numerology);
+    const names = ['Life Path', 'Expression', 'Soul Urge', 'Personality', 'Birthday', 'Destino', 'Lugar', 'Suerte Personal'];
+    addExpandedSources(n, 'Numerologia Pitagorica', `${names[i]} = ${n}: ${getNumberMeaning(n).split('.')[0]}`, weights.numerology);
   });
 
   // 2. NUMEROLOGIA CALDEA
-  addSource(analysis.chaldeanName, 'Numerologia Caldea',
-    `Nombre caldeo = ${analysis.chaldeanName}: vibracion sonora de tu nombre`, weights.numerology);
+  addExpandedSources(analysis.chaldeanName, 'Numerologia Caldea',
+    `Nombre caldeo = ${analysis.chaldeanName}: vibracion sonora`, weights.numerology);
 
   // 3. ASTROLOGIA
-  addSource(analysis.zodiacSign.rulerNumber, 'Astrologia',
-    `Regente ${analysis.zodiacSign.ruler} (${analysis.zodiacSign.name}, ${analysis.zodiacSign.element}): numero ${analysis.zodiacSign.rulerNumber}`, weights.astrology);
+  addExpandedSources(analysis.zodiacSign.rulerNumber, 'Astrologia',
+    `Regente ${analysis.zodiacSign.ruler} (${analysis.zodiacSign.name}, ${analysis.zodiacSign.element})`, weights.astrology);
   analysis.zodiacSign.luckyNumbers.forEach(n => {
-    addSource(n, 'Astrologia', `Numero de suerte de ${analysis.zodiacSign.name}`, weights.astrology);
+    addExpandedSources(n, 'Astrologia', `Numero de suerte de ${analysis.zodiacSign.name}`, weights.astrology);
   });
   analysis.planetaryPositions.forEach(p => {
-    addSource(p.luckyNumbers[0], 'Astrologia Planetaria',
+    addExpandedSources(p.luckyNumbers[0], 'Astrologia Planetaria',
       `${p.planet} en ${p.sign.name} (${p.degree} grados)`, weights.astrology * 0.7);
   });
 
   // 4. MAYA TZOLKIN
   analysis.mayanKin.luckyNumbers.forEach(n => {
-    addSource(n, 'Calendario Maya Tzolkin',
+    addExpandedSources(n, 'Calendario Maya Tzolkin',
       `Kin ${analysis.mayanKin.kinNumber}: ${analysis.mayanKin.tone.name} ${analysis.mayanKin.seal.name}`, weights.maya);
   });
 
   // 5. CABALA
-  addSource(analysis.sefirah.number, 'Cabala/Arbol de la Vida',
-    `Sefirah ${analysis.sefirah.name} (${analysis.sefirah.hebrew}): ${analysis.sefirah.meaning}`, weights.numerology * 0.6);
-  addSource(analysis.gematria, 'Cabala/Gematria',
+  addExpandedSources(analysis.sefirah.number, 'Cabala/Arbol de la Vida',
+    `Sefirah ${analysis.sefirah.name} (${analysis.sefirah.hebrew})`, weights.numerology * 0.6);
+  addExpandedSources(analysis.gematria % 9 || 9, 'Cabala/Gematria',
     `Gematria del nombre = ${analysis.gematria}`, weights.numerology * 0.5);
 
   // 6. LO SHU
   analysis.loShu.presentNumbers.forEach(n => {
-    addSource(n, 'Lo Shu (China)',
-      `Numero ${n} presente en tu cuadrado magico Lo Shu`, weights.numerology * 0.4);
+    addExpandedSources(n, 'Lo Shu (China)',
+      `Numero ${n} en tu cuadrado magico Lo Shu`, weights.numerology * 0.4);
   });
 
   // 7. BIORRITMOS
   const bio = analysis.biorhythm;
-  if (bio.physical.percent > 0) addSource(Math.abs(bio.physical.percent) || 1, 'Biorritmo Fisico',
+  if (bio.physical.percent > 0) addExpandedSources(Math.abs(bio.physical.percent) || 1, 'Biorritmo Fisico',
     `Ciclo fisico al ${bio.physical.percent}% (${bio.physical.phase})`, weights.biorhythm);
-  if (bio.emotional.percent > 0) addSource(Math.abs(bio.emotional.percent) || 2, 'Biorritmo Emocional',
+  if (bio.emotional.percent > 0) addExpandedSources(Math.abs(bio.emotional.percent) || 2, 'Biorritmo Emocional',
     `Ciclo emocional al ${bio.emotional.percent}% (${bio.emotional.phase})`, weights.biorhythm);
-  if (bio.intellectual.percent > 0) addSource(Math.abs(bio.intellectual.percent) || 3, 'Biorritmo Intelectual',
+  if (bio.intellectual.percent > 0) addExpandedSources(Math.abs(bio.intellectual.percent) || 3, 'Biorritmo Intelectual',
     `Ciclo intelectual al ${bio.intellectual.percent}% (${bio.intellectual.phase})`, weights.biorhythm);
 
   // 8. FIBONACCI
   analysis.fibonacciNumbers.forEach(n => {
-    addSource(n, 'Fibonacci',
-      `Numero de la secuencia de Fibonacci (${n}) - proporcion natural`, weights.fibonacci);
+    addExpandedSources(n, 'Fibonacci',
+      `Secuencia de Fibonacci (${n}) - proporcion natural`, weights.fibonacci);
   });
 
   // 9. NUMERO AUREO
   analysis.goldenRatioNumbers.forEach(n => {
-    addSource(n, 'Numero Aureo (phi)',
+    addExpandedSources(n, 'Numero Aureo (phi)',
       `Derivado de phi (${GOLDEN_RATIO.toFixed(6)})`, weights.fibonacci * 0.7);
   });
 
   // 10. LEY DE BENFORD
   analysis.benfordNumbers.forEach(n => {
-    addSource(n, 'Ley de Benford',
-      `Primer digito con alta probabilidad natural segun Benford`, weights.benford);
+    addExpandedSources(n, 'Ley de Benford',
+      `Primer digito de alta probabilidad natural segun Benford`, weights.benford);
   });
 
   // 11. ANO PERSONAL
-  addSource(analysis.personalYear, 'Ano Personal',
+  addExpandedSources(analysis.personalYear, 'Ano Personal',
     `Ano personal ${analysis.personalYear}: ${analysis.personalYearMeaning.split(':')[0]}`, weights.numerology * 0.5);
 
   // 12. DATOS HISTORICOS
@@ -965,125 +1020,138 @@ export function generateCompleteNumbers(
   });
 
   // 13. POISSON - Numeros con mayor probabilidad esperada
-  const poissonNums = getPoissonExpectedNumbers(historicalData.averageFrequency, maxNum, 15);
+  const poissonNums = getPoissonExpectedNumbers(historicalData.averageFrequency, maxNum, 15, isDigit);
   poissonNums.forEach((n, i) => {
     addSource(n, 'Distribucion de Poisson',
       `Alta probabilidad de aparicion segun modelo Poisson (lambda=${historicalData.averageFrequency.toFixed(2)})`, weights.poisson * (1 - i * 0.05));
   });
 
   // ============================================================
-  // SCORING: Usar pesos reales del usuario en vez de +10 fijo
+  // FASE 2: Scoring con pesos reales del usuario
   // ============================================================
-  // Cada fuente aporta su peso normalizado (0..1) multiplicado por:
-  //   - Un factor base de 10 puntos (para escala legible)
-  //   - Bonus por coincidencia multi-sistema (sin duplicar el peso)
-  // La suma objetivo historica se usa como guia secundaria.
-
   const scores: Map<number, { score: number; sources: NumberSource[] }> = new Map();
 
   for (const [num, sources] of allSources) {
     let totalScore = 0;
     for (const src of sources) {
-      // Peso real del sistema que produjo este numero (0..1)
-      // Base de 10 puntos * peso normalizado = contribucion real
       totalScore += 10 * src.weight;
     }
-    // Bonus por aparecer en multiples sistemas (convergencia cosmica)
-    // El bonus es geometrico: mas sistemas = mayor confianza
     const multiSystemBonus = sources.length > 1
       ? Math.pow(sources.length, 1.5) * 3
       : 0;
     totalScore += multiSystemBonus;
-
     scores.set(num, { score: totalScore, sources });
   }
 
-  // Agregar componente aleatorio controlado para numeros sin fuentes
-  // Esto permite que numeros no sugeridos por sistemas tengan oportunidad
-  // de ser seleccionados, proporcional al peso de aleatoriedad del usuario
+  // ============================================================
+  // FASE 3: Rellenar TODOS los numeros del rango con componente
+  // aleatorio para que todos tengan posibilidad de seleccion
+  // ============================================================
   for (let i = startFrom; i <= maxNum; i++) {
-    const existing = scores.get(i) || { score: 0, sources: [] };
-    existing.score += rng() * w.randomness * 20;
-    if (!scores.has(i)) scores.set(i, existing);
+    const existing = scores.get(i);
+    if (existing) {
+      existing.score += rng() * w.randomness * 25;
+    } else {
+      scores.set(i, { score: rng() * w.randomness * 25, sources: [] });
+    }
   }
 
-  // Para loterias standard, aplicar guia de suma objetivo
-  if (!isDigit && historicalData.patterns?.averageSum > 0) {
-    // Suavizar: dar bonus a combinaciones cercanas a la suma promedio
-    // (se aplica despues de seleccionar candidatos)
+  // ============================================================
+  // FASE 4: Seleccion estocastica ponderada (weighted sampling)
+  // En vez de tomar siempre los top-N, usamos muestreo ponderado
+  // Esto produce resultados DIFERENTES en cada generacion
+  // mientras respeta las probabilidades del analisis
+  // ============================================================
+  const allCandidates = Array.from(scores.entries()).map(([num, data]) => ({
+    num,
+    score: Math.max(0.1, data.score),
+    sources: data.sources,
+  }));
+
+  function weightedSampleWithoutReplacement(
+    candidates: { num: number; score: number; sources: NumberSource[] }[],
+    count: number
+  ): { num: number; score: number; sources: NumberSource[] }[] {
+    const pool = [...candidates];
+    const selected: { num: number; score: number; sources: NumberSource[] }[] = [];
+    for (let i = 0; i < count && pool.length > 0; i++) {
+      const totalWeight = pool.reduce((s, c) => s + c.score, 0);
+      if (totalWeight <= 0) break;
+      let r = rng() * totalWeight;
+      let idx = 0;
+      for (let j = 0; j < pool.length; j++) {
+        r -= pool[j].score;
+        if (r <= 0) { idx = j; break; }
+        idx = j;
+      }
+      selected.push(pool[idx]);
+      pool.splice(idx, 1);
+    }
+    return selected;
   }
 
-  // Seleccionar los mejores numeros
-  const sorted = Array.from(scores.entries()).sort((a, b) => b[1].score - a[1].score);
+  const sampled = weightedSampleWithoutReplacement(allCandidates, config.mainCount);
+  sampled.sort((a, b) => a.num - b.num);
 
-  const selectedMain: number[] = [];
-  const details: DetailedNumber[] = [];
-
-  for (const [num, data] of sorted) {
-    if (selectedMain.length >= config.mainCount) break;
-    selectedMain.push(num);
-
-    // Crear resumen detallado para este numero
-    const summary = data.sources.length > 0
-      ? `Este numero aparece en ${data.sources.length} sistema(s): ` +
-        data.sources.map(s => `${s.system} (${s.detail})`).join('; ')
-      : 'Seleccion automatica por puntuacion residual del algoritmo.';
-
-    details.push({
-      number: num,
-      sources: data.sources,
-      totalScore: Math.round(data.score),
+  const selectedMain: number[] = sampled.map(s => s.num);
+  const details: DetailedNumber[] = sampled.map(s => {
+    const summary = s.sources.length > 0
+      ? `Este numero aparece en ${s.sources.length} sistema(s): ` +
+        s.sources.map(src => `${src.system} (${src.detail})`).join('; ')
+      : 'Seleccion por componente estocastico del algoritmo.';
+    return {
+      number: s.num,
+      sources: s.sources,
+      totalScore: Math.round(s.score),
       summary,
-    });
-  }
+    };
+  });
 
-  selectedMain.sort((a, b) => a - b);
-
-  // NUMEROS BONUS (estrellas/reintegro/serie)
-  const bonusScores: Map<number, number> = new Map();
+  // ============================================================
+  // FASE 5: Numeros BONUS (estrellas/reintegro/serie)
+  // Tambien con muestreo ponderado, no determinista
+  // ============================================================
+  let selectedBonus: number[] = [];
 
   if (config.bonus > 0 && config.bonusCount > 0) {
-    // Para digit-based, el bonus (serie) es 1..bonusRange
-    // Para standard, el bonus es 1..bonusRange
-    const bonusStart = 1;
-    for (let i = bonusStart; i <= config.bonus; i++) {
-      bonusScores.set(i, rng() * 50);
+    const bonusCandidates: { num: number; score: number }[] = [];
+    for (let i = 1; i <= config.bonus; i++) {
+      let score = rng() * 50;
+      pythNumbers.forEach(n => {
+        const mapped = mapToRange(n, config.bonus, false);
+        if (mapped === i) score += 100 * w.numerology;
+      });
+      analysis.zodiacSign.luckyNumbers.forEach(n => {
+        const mapped = mapToRange(n, config.bonus, false);
+        if (mapped === i) score += 50 * w.astrology;
+      });
+      analysis.mayanKin.luckyNumbers.forEach(n => {
+        const mapped = mapToRange(n, config.bonus, false);
+        if (mapped === i) score += 40 * w.maya;
+      });
+      bonusCandidates.push({ num: i, score: Math.max(0.1, score) });
     }
-
-    // Influencia de numeros personales en bonus
-    pythNumbers.forEach(n => {
-      const mapped = mapToRange(n, config.bonus, false);
-      bonusScores.set(mapped, (bonusScores.get(mapped) || 0) + 100 * w.numerology);
-    });
-    analysis.zodiacSign.luckyNumbers.forEach(n => {
-      const mapped = mapToRange(n, config.bonus, false);
-      bonusScores.set(mapped, (bonusScores.get(mapped) || 0) + 50 * w.astrology);
-    });
-    analysis.mayanKin.luckyNumbers.forEach(n => {
-      const mapped = mapToRange(n, config.bonus, false);
-      bonusScores.set(mapped, (bonusScores.get(mapped) || 0) + 40 * w.maya);
-    });
-
-    const sortedBonus = Array.from(bonusScores.entries()).sort((a, b) => b[1] - a[1]);
-    const selectedBonus: number[] = [];
-    for (const [num] of sortedBonus) {
-      if (selectedBonus.length >= config.bonusCount) break;
-      selectedBonus.push(num);
+    // Muestreo ponderado para bonus
+    const bonusPool = [...bonusCandidates];
+    for (let i = 0; i < config.bonusCount && bonusPool.length > 0; i++) {
+      const totalW = bonusPool.reduce((s, c) => s + c.score, 0);
+      if (totalW <= 0) break;
+      let r = rng() * totalW;
+      let idx = 0;
+      for (let j = 0; j < bonusPool.length; j++) {
+        r -= bonusPool[j].score;
+        if (r <= 0) { idx = j; break; }
+        idx = j;
+      }
+      selectedBonus.push(bonusPool[idx].num);
+      bonusPool.splice(idx, 1);
     }
     selectedBonus.sort((a, b) => a - b);
-
-    return {
-      main: selectedMain,
-      bonus: selectedBonus,
-      details,
-      systemsUsed,
-    };
   }
 
-  // Loterias sin bonus (ej: ONCE Triplex)
   return {
     main: selectedMain,
-    bonus: [],
+    bonus: selectedBonus,
     details,
     systemsUsed,
   };

@@ -68,11 +68,13 @@ export default function NumberGenerator() {
         : 1
 
       // 3. Generar numeros combinando todo
+      // Semilla con alta entropia: fecha+nacimiento+timestamp completo+random
       const seed = parseInt(
         profile.birthDate.replace(/-/g, '') +
         consultationDate.replace(/-/g, '') +
-        Date.now().toString().slice(-4)
-      )
+        Date.now().toString() +
+        Math.floor(Math.random() * 99999).toString()
+      ) % 2147483647
 
       const generated = generateCompleteNumbers(
         fullAnalysis,
