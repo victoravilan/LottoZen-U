@@ -1252,6 +1252,36 @@ export const WISDOM_STORIES: WisdomStory[] = [
     story: 'A finales del siglo XIX, el doctor Wilhelm Fliess descubrio que el cuerpo humano tiene ciclos: fisico de 23 dias, emocional de 28 e intelectual de 33. En los dias de transicion, el cuerpo es vulnerable. En los picos, invencible.',
     lesson: 'Tu cuerpo es un reloj cosmico. Juega en tus dias de pico, descansa en tus dias valle.',
   },
+  {
+    title: 'El Gato de Schrodinger',
+    story: 'Erwin Schrodinger planteo un experimento mental: un gato en una caja con un mecanismo cuantico. Segun la mecanica cuantica, el gato esta vivo Y muerto al mismo tiempo (superposicion) hasta que alguien abre la caja y lo observa. Solo entonces la funcion de onda colapsa en un estado definido.',
+    lesson: 'Antes de generar tus numeros, todos los numeros posibles existen en superposicion. Tu observacion colapsa la realidad cuantica en un resultado concreto.',
+  },
+  {
+    title: 'El Tiempo en Espiral de Penrose',
+    story: 'Roger Penrose, premio Nobel de Fisica 2020, proponia que el universo no tiene un unico Big Bang, sino que pasa por ciclos llamados "aeones". Cada aeon termina y da inicio al siguiente en una espiral cosmica infinita. Los patrones se repiten pero en niveles superiores, como una escalera caracol.',
+    lesson: 'El tiempo no es una linea recta sino una espiral. Los numeros que aparecieron en el pasado volveran en una nueva vuelta de la espiral, transformados.',
+  },
+  {
+    title: 'Los Muchos Mundos de Everett',
+    story: 'Hugh Everett III proponia en 1957 que cada decision cuantica ramifica el universo en multiples lineas temporales paralelas. En cada rama, una version diferente de ti existe con resultados diferentes. No hay un unico futuro, sino infinidad de futuros coexistiendo.',
+    lesson: 'Cada generacion de numeros explora 5 realidades alternativas. La que manifiestas es la de mayor coherencia cosmica, pero en otro universo, otros numeros ganaron.',
+  },
+  {
+    title: 'El Hexagrama del I Ching',
+    story: 'El I Ching o Libro de las Mutaciones es el texto mas antiguo de China (3000 anos). Contiene 64 hexagramas formados por 6 lineas yang (continuas) y yin (discontinuas). Cada hexagrama representa un patron temporal del universo. Los sabios chinos lo consultaban antes de cada decision importante.',
+    lesson: 'Cada momento del tiempo tiene un hexagrama activo que influye en los eventos. Conocer el hexagrama de tu momento te conecta con el flujo temporal.',
+  },
+  {
+    title: 'La Resonancia de Schumann',
+    story: 'En 1952, Winfried Otto Schumann descubrio que la cavidad entre la Tierra y la ionosfera resuena a 7.83 Hz. Esta frecuencia, conocida como el "latido del planeta", es modulada por la actividad solar, los rayos y la actividad humana. Algunos investigadores la relacionan con ritmos biologicos y estados de conciencia.',
+    lesson: 'La Tierra vibra a 7.83 Hz. Tus numeros se modulan por esta frecuencia natural, conectandote con el pulso del planeta.',
+  },
+  {
+    title: 'El Entrelazamiento Cuantico',
+    story: 'Albert Einstein lo llamo "accion fantasmal a distancia": dos particulas pueden estar entrelazadas de forma que medir una afecta instantaneamente a la otra, sin importar la distancia. Este fenomeno, confirmado experimentalmente (premio Nobel 2022), desafia nuestra intuicion sobre el espacio y el tiempo.',
+    lesson: 'Los numeros entrelazados por afinidad vibratoria se influyen mutuamente. Cuando uno es seleccionado, sus entrelazados cambian de probabilidad.',
+  },
 ];
 
 export function getRandomWisdom(): WisdomStory {

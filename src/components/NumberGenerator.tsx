@@ -88,7 +88,9 @@ export default function NumberGenerator() {
           patterns,
         },
         profile.weights,
-        seed
+        seed,
+        profile.birthDate,
+        consultationDate
       )
 
       setResult(generated)
@@ -103,8 +105,10 @@ export default function NumberGenerator() {
           Generador Cosmico
         </h2>
         <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
-          Integra 13 sistemas: numerologia pitagorica y caldea, astrologia, calendario maya, cabala,
-          Lo Shu, biorritmos, Fibonacci, numero aureo, ley de Benford, Poisson, analisis historico y mas.
+          Integra 18 sistemas: numerologia pitagorica y caldea, astrologia, calendario maya, cabala,
+          Lo Shu, biorritmos, Fibonacci, numero aureo, ley de Benford, Poisson, analisis historico,
+          ano personal, <strong style={{ color: 'var(--accent-purple-light)' }}>motor cuantico</strong> (superposicion,
+          entrelazamiento, tiempo en espiral, realidades alternativas y coherencia cuantica).
         </p>
       </div>
 
@@ -179,7 +183,7 @@ export default function NumberGenerator() {
           animation: isGenerating ? 'none' : 'glow 3s ease-in-out infinite', marginBottom: '24px',
         }}
       >
-        {isGenerating ? '\u27F3 Analizando 13 sistemas cosmicos...' : '\u2726 Generar mis numeros'}
+        {isGenerating ? '\u27F3 Analizando 18 sistemas cosmicos + cuanticos...' : '\u2726 Generar mis numeros'}
       </button>
 
       {/* Generating animation */}
@@ -194,7 +198,7 @@ export default function NumberGenerator() {
             Procesando tu analisis multidisciplinar...
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', justifyContent: 'center', maxWidth: '400px', margin: '0 auto' }}>
-            {['Pitagorica', 'Caldea', 'Astrologia', 'Maya', 'Cabala', 'Lo Shu', 'Biorritmos', 'Fibonacci', 'Benford', 'Poisson', 'Historico', 'Ano Personal', 'Aureo'].map((s, i) => (
+            {['Pitagorica', 'Caldea', 'Astrologia', 'Maya', 'Cabala', 'Lo Shu', 'Biorritmos', 'Fibonacci', 'Benford', 'Poisson', 'Historico', 'Ano Personal', 'Aureo', 'Superposicion', 'Entrelazamiento', 'I Ching', 'Everett', 'Schumann'].map((s, i) => (
               <span key={s} style={{
                 fontSize: '10px', padding: '3px 8px', borderRadius: '6px',
                 background: 'var(--bg-card)', color: 'var(--accent-purple-light)',
@@ -263,6 +267,147 @@ export default function NumberGenerator() {
               ))}
             </div>
           </div>
+
+          {/* Quantum analysis section */}
+          {result.quantum && (
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(20, 184, 166, 0.05))',
+              border: '1px solid rgba(139, 92, 246, 0.25)',
+              borderRadius: '16px', padding: '20px', marginBottom: '16px',
+            }}>
+              <h4 className="font-display" style={{
+                fontSize: '15px', color: 'var(--accent-purple-light)', marginBottom: '16px',
+                display: 'flex', alignItems: 'center', gap: '8px',
+              }}>
+                <span style={{ fontSize: '18px' }}>{'\u269B'}</span>
+                Analisis Cuantico
+              </h4>
+
+              {/* Hexagram + Spiral Time */}
+              <div style={{
+                display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                gap: '8px', marginBottom: '16px',
+              }}>
+                <div style={{
+                  background: 'var(--bg-secondary)', borderRadius: '10px', padding: '10px 12px',
+                }}>
+                  <p style={{ fontSize: '9px', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
+                    Hexagrama I Ching
+                  </p>
+                  <p style={{ fontSize: '14px', color: 'var(--accent-gold)', fontWeight: 600 }}>
+                    {result.quantum.hexagramName} #{result.quantum.spiralTime.hexagram.number}
+                  </p>
+                  <p style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                    {result.quantum.hexagramKeywords}
+                  </p>
+                </div>
+
+                <div style={{
+                  background: 'var(--bg-secondary)', borderRadius: '10px', padding: '10px 12px',
+                }}>
+                  <p style={{ fontSize: '9px', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
+                    Tiempo en Espiral
+                  </p>
+                  <p style={{ fontSize: '14px', color: 'var(--accent-purple-light)', fontWeight: 600 }}>
+                    Ciclo {result.quantum.spiralTime.cycleNumber}
+                  </p>
+                  <p style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                    Aeon: {(result.quantum.spiralTime.aeonOffset * 100).toFixed(0)}% | Resonancia: {result.quantum.spiralTime.resonanceFactor.toFixed(2)}x
+                  </p>
+                </div>
+
+                <div style={{
+                  background: 'var(--bg-secondary)', borderRadius: '10px', padding: '10px 12px',
+                }}>
+                  <p style={{ fontSize: '9px', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
+                    Schumann
+                  </p>
+                  <p style={{ fontSize: '14px', color: 'var(--accent-gold)', fontWeight: 600 }}>
+                    {result.quantum.schumannResonance.dominantFrequency.toFixed(2)} Hz
+                  </p>
+                  <p style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                    Amplitud: {(result.quantum.schumannResonance.combinedAmplitude * 100).toFixed(0)}%
+                  </p>
+                </div>
+              </div>
+
+              {/* Coherence meter */}
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px',
+                }}>
+                  <p style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                    Coherencia Cuantica
+                  </p>
+                  <p style={{
+                    fontSize: '14px', fontWeight: 700,
+                    color: result.quantum.coherenceScore > 60 ? '#84cc16'
+                         : result.quantum.coherenceScore > 30 ? '#fbbf24' : '#f87171',
+                  }}>
+                    {result.quantum.coherenceScore}%
+                  </p>
+                </div>
+                <div style={{
+                  width: '100%', height: '8px', background: 'var(--bg-secondary)',
+                  borderRadius: '4px', overflow: 'hidden',
+                }}>
+                  <div style={{
+                    width: `${result.quantum.coherenceScore}%`, height: '100%',
+                    background: result.quantum.coherenceScore > 60
+                      ? 'linear-gradient(90deg, #84cc16, #22c55e)'
+                      : result.quantum.coherenceScore > 30
+                      ? 'linear-gradient(90deg, #fbbf24, #f59e0b)'
+                      : 'linear-gradient(90deg, #f87171, #ef4444)',
+                    borderRadius: '4px', transition: 'width 0.8s ease',
+                  }} />
+                </div>
+                <p style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                  {result.quantum.coherenceScore > 60
+                    ? 'Alta coherencia: sistemas cosmicos alineados (efecto laser cuantico)'
+                    : result.quantum.coherenceScore > 30
+                    ? 'Coherencia moderada: alineacion parcial entre sistemas'
+                    : 'Baja coherencia: predominio del componente estocastico'}
+                </p>
+              </div>
+
+              {/* Alternate realities */}
+              <div style={{ marginBottom: '12px' }}>
+                <p style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px' }}>
+                  Realidades Alternativas (Many Worlds - Everett)
+                </p>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  {result.quantum.allRealities.slice(0, 5).map((reality, i) => (
+                    <div key={i} style={{
+                      padding: '6px 10px', borderRadius: '8px',
+                      background: i === 0 ? 'rgba(139, 92, 246, 0.15)' : 'var(--bg-secondary)',
+                      border: i === 0 ? '1px solid var(--accent-purple)' : '1px solid var(--border)',
+                      fontSize: '10px',
+                    }}>
+                      <span style={{
+                        color: i === 0 ? 'var(--accent-purple-light)' : 'var(--text-muted)',
+                        fontWeight: i === 0 ? 600 : 400,
+                      }}>
+                        R{i + 1}: {reality.coherenceScore}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <p style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '6px' }}>
+                  Se exploraron 5 realidades paralelas. La realidad R1 tiene mayor coherencia cosmica y fue seleccionada.
+                </p>
+              </div>
+
+              {/* Quantum description */}
+              <div style={{
+                background: 'rgba(139, 92, 246, 0.05)', borderRadius: '10px', padding: '12px',
+                border: '1px solid rgba(139, 92, 246, 0.15)',
+              }}>
+                <p style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.6, whiteSpace: 'pre-line' }}>
+                  {result.quantum.quantumDescription}
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Detailed explanation for each number */}
           <div style={{
@@ -487,7 +632,7 @@ export default function NumberGenerator() {
               Probabilidad real de acertar el premio mayor de {lottery.name}:{' '}
               <strong style={{ color: 'var(--warning)' }}>{lottery.odds}</strong>
               <br />
-              Estos numeros combinan 13 sistemas matematicos y tradicionales. La loteria sigue siendo azar.
+              Estos numeros combinan 18 sistemas matematicos, tradicionales y cuanticos. La loteria sigue siendo azar.
               Juega con responsabilidad.
             </p>
           </div>

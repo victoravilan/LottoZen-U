@@ -15,7 +15,13 @@
 // 10. Distribucion de Poisson (modelo probabilistico)
 // 11. Analisis historico: frecuencias, Markov, patrones
 // 12. Numero de Ano Personal (ciclos de 9 anos)
+// 13. Motor Cuantico (superposicion, entrelazamiento, tiempo espiral)
 // ============================================================
+
+import {
+  generateQuantumNumbers,
+  type QuantumGenerationResult,
+} from './quantumEngine';
 
 // -------------------------------------------------------
 // 1. NUMEROLOGIA PITAGORICA
@@ -779,6 +785,9 @@ export interface GenerationResult {
   bonus: number[];
   details: DetailedNumber[];
   systemsUsed: string[];
+  // Informacion cuantica (motor cuantico)
+  quantum?: QuantumGenerationResult;
+  quantumEnabled?: boolean;
 }
 
 // Funcion auxiliar para mapear al rango de la loteria
@@ -854,7 +863,9 @@ export function generateCompleteNumbers(
     biorhythm: number;
     randomness: number;
   },
-  seed: number
+  seed: number,
+  birthDate: string,
+  consultationDate: string
 ): GenerationResult {
   // Configuracion completa de todas las loterias soportadas
   const LOTTERY_RANGES: Record<string, {
@@ -1090,7 +1101,15 @@ export function generateCompleteNumbers(
     return selected;
   }
 
-  const sampled = weightedSampleWithoutReplacement(allCandidates, config.mainCount);
+// ============================================================
+// INTEGRACION CUANTICA
+// El motor cuantico procesa los candidatos del motor cosmico
+// usando superposicion, entrelazamiento, tiempo en espiral,
+// realidades alternativas y coherencia cuantica.
+// (GenerationResult se extiende mas arriba con campos cuanticos)
+// ============================================================
+
+const sampled = weightedSampleWithoutReplacement(allCandidates, config.mainCount);
   sampled.sort((a, b) => a.num - b.num);
 
   const selectedMain: number[] = sampled.map(s => s.num);
@@ -1149,10 +1168,68 @@ export function generateCompleteNumbers(
     selectedBonus.sort((a, b) => a - b);
   }
 
+  // ============================================================
+  // FASE 6: PROCESAMIENTO CUANTICO
+  // Pasar los candidatos del motor cosmico por el motor cuantico
+  // para enriquecer la seleccion con:
+  // - Superposicion y colapso de funcion de onda
+  // - Entrelazamiento numerologico
+  // - Tiempo en espiral (Penrose CCC + I Ching)
+  // - Realidades alternativas (Many Worlds - Everett)
+  // - Coherencia cuantica
+  // ============================================================
+  const quantumCandidates = new Map<number, { score: number; systems: string[] }>();
+  for (const [num, data] of scores) {
+    const systems = data.sources.map(s => s.system);
+    quantumCandidates.set(num, { score: data.score, systems });
+  }
+
+  const quantumResult = generateQuantumNumbers({
+    candidates: quantumCandidates,
+    maxRange: maxNum,
+    startFrom,
+    count: config.mainCount,
+    bonusCount: config.bonusCount,
+    bonusMax: config.bonus,
+    birthDate: birthDate,
+    consultationDate,
+    rng,
+  });
+
+  // Usar los numeros cuanticos como resultado principal
+  // (mas rico que el muestreo clasico)
+  const quantumMain = quantumResult.mainNumbers;
+  const quantumBonus = quantumResult.bonusNumbers;
+
+  // Detalles enriquecidos con info cuantica
+  const quantumDetails: DetailedNumber[] = quantumMain.map(num => {
+    const existingData = scores.get(num);
+    const sources = existingData?.sources || [];
+    const quantumState = quantumResult.quantumStates.get(num);
+    const quantumInfo = quantumState
+      ? ` | Coherencia cuantica: ${quantumState.probability.toFixed(2)} ` +
+        `(fase ${(quantumState.phase * 180 / Math.PI).toFixed(0)}deg, ` +
+        `${quantumState.systems.length} sistemas)`
+      : '';
+    const summary = sources.length > 0
+      ? `Este numero aparece en ${sources.length} sistema(s): ` +
+        sources.map(src => `${src.system} (${src.detail})`).join('; ') +
+        quantumInfo
+      : `Seleccion cuantica por colapso de funcion de onda.` + quantumInfo;
+    return {
+      number: num,
+      sources,
+      totalScore: Math.round(existingData?.score || quantumState?.probability || 0),
+      summary,
+    };
+  });
+
   return {
-    main: selectedMain,
-    bonus: selectedBonus,
-    details,
-    systemsUsed,
+    main: quantumMain,
+    bonus: quantumBonus.length > 0 ? quantumBonus : selectedBonus,
+    details: quantumDetails,
+    systemsUsed: [...systemsUsed, 'Motor Cuantico (Superposicion)', 'Tiempo en Espiral (I Ching + Penrose)', 'Realidades Alternativas (Everett)'],
+    quantum: quantumResult,
+    quantumEnabled: true,
   };
 }
