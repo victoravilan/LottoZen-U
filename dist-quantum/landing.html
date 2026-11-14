@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="theme-color" content="#1a0b2e" />
+  <title>LottoZen Ultra - Numerologia Predictiva</title>
+  <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg-primary: #0d0521;
+      --bg-secondary: #1a0b2e;
+      --bg-card: #1e1238;
+      --bg-card-hover: #261845;
+      --accent-gold: #d4af37;
+      --accent-gold-light: #f0d878;
+      --accent-purple: #8b5cf6;
+      --accent-purple-light: #a78bfa;
+      --accent-pink: #ec4899;
+      --accent-teal: #14b8a6;
+      --text-primary: #f5f0ff;
+      --text-secondary: #b8a8d4;
+      --text-muted: #7c6f99;
+      --border: rgba(139, 92, 246, 0.2);
+      --border-gold: rgba(212, 175, 55, 0.3);
+    }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .font-display { font-family: 'Cinzel', serif; }
+    
+    /* Starfield background - CSS only, no canvas */
+    .starfield {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      background: 
+        radial-gradient(2px 2px at 20% 30%, rgba(212, 175, 55, 0.8), transparent),
+        radial-gradient(1px 1px at 40% 70%, rgba(167, 139, 250, 0.6), transparent),
+        radial-gradient(1.5px 1.5px at 50% 50%, rgba(245, 240, 255, 0.5), transparent),
+        radial-gradient(1px 1px at 80% 10%, rgba(212, 175, 55, 0.7), transparent),
+        radial-gradient(2px 2px at 90% 60%, rgba(167, 139, 250, 0.5), transparent),
+        radial-gradient(1px 1px at 33% 80%, rgba(245, 240, 255, 0.4), transparent),
+        radial-gradient(1.5px 1.5px at 70% 35%, rgba(212, 175, 55, 0.6), transparent),
+        radial-gradient(1px 1px at 15% 55%, rgba(167, 139, 250, 0.5), transparent),
+        radial-gradient(2px 2px at 60% 90%, rgba(245, 240, 255, 0.3), transparent),
+        radial-gradient(1px 1px at 85% 25%, rgba(212, 175, 55, 0.5), transparent),
+        var(--bg-primary);
+    }
+    
+    .content { position: relative; z-index: 10; }
+    
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13, 5, 33, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-img {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.4));
+    }
+    .header-title {
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--accent-gold-light), var(--accent-purple-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+    }
+    .header-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+    }
+    
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 16px 80px;
+    }
+    
+    .hero {
+      text-align: center;
+      margin-bottom: 32px;
+      padding: 24px 0;
+    }
+    .hero-logo {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 20px;
+      display: block;
+      filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.4));
+      animation: float 4s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .hero h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--accent-gold-light), var(--accent-purple-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+    }
+    .hero p {
+      color: var(--text-secondary);
+      max-width: 500px;
+      margin: 0 auto;
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    
+    .systems-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .system-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 12px;
+      text-align: center;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .system-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-gold);
+    }
+    .system-icon {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    .system-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-gold);
+      margin-bottom: 4px;
+    }
+    .system-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    
+    .cta-section {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(212, 175, 55, 0.1));
+      border: 1px solid var(--border-gold);
+      border-radius: 20px;
+      padding: 32px 24px;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .cta-section h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      color: var(--accent-gold);
+      margin-bottom: 8px;
+    }
+    .cta-section p {
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    .cta-button {
+      display: inline-block;
+      padding: 14px 36px;
+      background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+      color: #0d0521;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.2s ease;
+    }
+    .cta-button:hover {
+      transform: scale(1.05);
+    }
+    
+    .info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .info-card h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 16px;
+      color: var(--accent-purple-light);
+      margin-bottom: 16px;
+    }
+    .info-card p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    .info-card ul {
+      list-style: none;
+      padding: 0;
+    }
+    .info-card li {
+      font-size: 13px;
+      color: var(--text-secondary);
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+    }
+    .info-card li:last-child { border-bottom: none; }
+    .info-card li strong {
+      color: var(--accent-gold);
+    }
+    
+    footer {
+      text-align: center;
+      padding: 24px 16px;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border);
+    }
+    footer .footer-title {
+      margin-bottom: 8px;
+    }
+    footer .footer-title strong {
+      color: var(--accent-gold);
+    }
+    footer .disclaimer {
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+      margin-bottom: 16px;
+      font-size: 12px;
+    }
+    footer .author {
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.8;
+      margin-bottom: 4px;
+    }
+    footer .author strong {
+      color: var(--accent-gold);
+    }
+    footer .copyright {
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeIn 0.6s ease; }
+  </style>
+</head>
+<body>
+  <div class="starfield"></div>
+  
+  <div class="content">
+    <header>
+      <div class="header-inner">
+        <img src="/logo.svg" alt="LottoZen Ultra" class="logo-img" />
+        <div>
+          <div class="header-title">LottoZen Ultra</div>
+          <div class="header-subtitle">NUMEROLOGIA PREDICTIVA</div>
+        </div>
+      </div>
+    </header>
+    
+    <main>
+      <section class="hero fade-in">
+        <img src="/logo.svg" alt="LottoZen Ultra" class="hero-logo" />
+        <h2>Bienvenido a LottoZen Ultra</h2>
+        <p>
+          Crea tu perfil cosmico para comenzar. Integramos 13 sistemas matematicos y tradiciones milenarias
+          para generar tus numeros personalizados: numerologia pitagorica y caldea, astrologia, calendario maya,
+          cabala, Lo Shu, biorritmos, Fibonacci, numero aureo, ley de Benford, distribucion de Poisson y analisis historico.
+        </p>
+        <a href="/app.html" class="cta-button">Entrar a la aplicacion</a>
+      </section>
+      
+      <section class="systems-grid fade-in">
+        <div class="system-card">
+          <div class="system-icon">&#9650;</div>
+          <div class="system-name">Numerologia Pitagorica</div>
+          <div class="system-desc">Life Path, Expression, Soul Urge basados en fecha y nombre</div>
+        </div>
+        <div class="system-card">
+          <div class="system-icon">&#9670;</div>
+          <div class="system-name">Numerologia Caldea</div>
+          <div class="system-desc">Vibracion sonora de letras, sistema 1-8, 9 sagrado</div>
+        </div>
+        <div class="system-card">
+          <div class="system-icon">&#9800;</div>
+          <div class="system-name">Astrologia</div>
+          <div class="system-desc">Signo zodiacal, elemento, planeta regente, carta natal</div>
+        </div>
+        <div class="system-card">
+          <div class="system-icon">&#9728;</div>
+          <div class="system-name">Calendario Maya</div>
+          <div class="system-desc">Tzolkin: 260 dias, 20 sellos, 13 tonos galacticos</div>
+        </div>
+        <div class="system-card">
+          <div class="system-icon">&#10022;</div>
+          <div class="system-name">Cabala</div>
+          <div class="system-desc">Arbol de la Vida: 10 sefirot, gematria, 22 senderos</div>
+        </div>
+        <div class="system-card">
+          <div class="system-icon">&#9636;</div>
+          <div class="system-name">Lo Shu</div>
+          <div class="system-desc">Cuadrado magico 3x3, numerologia china</div>
+        </div>
+        <div class="system-card">
+          <div class="system-icon">&#9651;</div>
+          <div class="system-name">Biorritmos</div>
+          <div class="system-desc">Ciclos fisico 23d, emocional 28d, intelectual 33d</div>
+        </div>
+        <div class="system-card">
+          <div class="system-icon">&#8734;</div>
+          <div class="system-name">Fibonacci</div>
+          <div class="system-desc">Secuencia aurea y numero phi (1.618...)</div>
+        </div>
+        <div class="system-card">
+          <div class="system-icon">&#931;</div>
+          <div class="system-name">Ley de Benford</div>
+          <div class="system-desc">Distribucion natural del primer digito</div>
+        </div>
+        <div class="system-card">
+          <div class="system-icon">&#955;</div>
+          <div class="system-name">Poisson</div>
+          <div class="system-desc">Modelo probabilistico de eventos discretos</div>
+        </div>
+        <div class="system-card">
+          <div class="system-icon">&#9776;</div>
+          <div class="system-name">Analisis Historico</div>
+          <div class="system-desc">Frecuencias, numeros calientes/frios/atrasados</div>
+        </div>
+        <div class="system-card">
+          <div class="system-icon">&#9711;</div>
+          <div class="system-name">Ano Personal</div>
+          <div class="system-desc">Ciclos numericos de 9 anos</div>
+        </div>
+        <div class="system-card">
+          <div class="system-icon">&#10039;</div>
+          <div class="system-name">Numero Aureo</div>
+          <div class="system-desc">Proporcion divina en la naturaleza</div>
+        </div>
+      </section>
+      
+      <section class="cta-section fade-in">
+        <h3>Genera tus numeros</h3>
+        <p>13 sistemas integrados | Resumen detallado por numero | Euromillones, Primitiva, Eurojackpot, Bonoloto</p>
+        <a href="/app.html" class="cta-button">&#10022; Entrar a la aplicacion</a>
+      </section>
+      
+      <section class="info-card fade-in">
+        <h3>Sobre el motor cosmico</h3>
+        <p>
+          LottoZen Ultra integra 13 sistemas matematicos y tradiciones milenarias para generar numeros personalizados.
+          Cada numero generado incluye un resumen explicando su origen: que sistemas lo respaldan y por que fue seleccionado.
+        </p>
+        <ul>
+          <li><strong>Numerologia:</strong> Basada en tu fecha de nacimiento y nombre completo</li>
+          <li><strong>Astrologia:</strong> Signo zodiacal, elemento, planeta regente segun fecha, hora y region</li>
+          <li><strong>Maya Tzolkin:</strong> Kin Maya calculado desde tu fecha de nacimiento</li>
+          <li><strong>Cabala:</strong> Sefirah correspondiente en el Arbol de la Vida</li>
+          <li><strong>Biorritmos:</strong> Tus ciclos fisico, emocional e intelectual actuales</li>
+          <li><strong>Estadistica:</strong> Analisis de 7 anos de resultados historicos</li>
+          <li><strong>Probabilidad:</strong> Modelos de Benford y Poisson aplicados</li>
+        </ul>
+      </section>
+      
+      <section class="info-card fade-in" style="border-color: rgba(239, 68, 68, 0.15); background: rgba(239, 68, 68, 0.05);">
+        <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5; text-align: center;">
+          Juega con responsabilidad. Las loterias son juegos de azar. Los resultados pasados no predicen resultados futuros.
+          No existe ningun metodo garantizado para ganar. Si sientes que no puedes parar, busca ayuda en 
+          <a href="https://www.jugarbien.es" target="_blank" rel="noopener" style="color: var(--accent-purple-light);">jugarbien.es</a>
+        </p>
+      </section>
+    </main>
+    
+    <footer>
+      <p class="footer-title">
+        <strong>LottoZen Ultra</strong> v2.0 - Numerologia Predictiva
+      </p>
+      <p class="disclaimer">
+        Esta aplicacion genera numeros basados en analisis historico y numerologia como forma de entretenimiento.
+        Las loterias son juegos de azar. Los resultados pasados no predicen resultados futuros.
+        No existe ningun metodo garantizado para ganar. Juega con responsabilidad.
+      </p>
+      <p class="author">
+        Creado por: <strong>Victor M.F. Avilan</strong> - Valor Agregado
+      </p>
+      <p class="copyright">
+        &copy; Todos los derechos reservados
+      </p>
+    </footer>
+  </div>
+  
+  <script>
+    // Unregister ALL service workers to clear old cached content
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        registrations.forEach(function(registration) {
+          registration.unregister();
+        });
+        console.log('All service workers unregistered');
+      });
+    }
+    // Clear all caches
+    if ('caches' in window) {
+      caches.keys().then(function(names) {
+        names.forEach(function(name) {
+          caches.delete(name);
+        });
+        console.log('All caches cleared');
+      });
+    }
+  </script>
+</body>
+</html>

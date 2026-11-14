@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LottoZen Ultra - Guía de Publicación en Google Play Store</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #0d0521;
+    color: #f5f0ff;
+    line-height: 1.7;
+    padding: 0;
+  }
+  .header {
+    background: linear-gradient(135deg, #1a0b2e 0%, #0d0521 100%);
+    border-bottom: 2px solid #d4af37;
+    padding: 40px 20px;
+    text-align: center;
+  }
+  .header h1 {
+    font-family: 'Georgia', serif;
+    font-size: 28px;
+    color: #d4af37;
+    margin-bottom: 8px;
+  }
+  .header p { color: #b8a8d4; font-size: 14px; }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px 20px 60px;
+  }
+  .phase {
+    background: #1e1238;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .phase-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .phase-number {
+    background: linear-gradient(135deg, #8b5cf6, #d4af37);
+    color: #fff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .phase-title h2 {
+    font-size: 18px;
+    color: #f0d878;
+  }
+  .phase-content { padding-left: 48px; }
+  .phase-content h3 {
+    color: #a78bfa;
+    font-size: 14px;
+    margin-top: 16px;
+    margin-bottom: 8px;
+  }
+  .phase-content p {
+    color: #b8a8d4;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  .phase-content ol, .phase-content ul {
+    padding-left: 20px;
+    margin-bottom: 12px;
+  }
+  .phase-content li {
+    color: #b8a8d4;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .code-block {
+    background: #0a0418;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 10px 0;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+    color: #f0d878;
+    overflow-x: auto;
+    white-space: pre-wrap;
+  }
+  .warning {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 10px 0;
+    color: #fbbf24;
+    font-size: 13px;
+  }
+  .success {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 10px 0;
+    color: #34d399;
+    font-size: 13px;
+  }
+  .checklist {
+    background: rgba(139, 92, 246, 0.08);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 10px 0;
+  }
+  .checklist li {
+    list-style: none;
+    padding-left: 0;
+  }
+  .checklist li:before {
+    content: "[ ] ";
+    color: #d4af37;
+    font-weight: bold;
+  }
+  .footer {
+    text-align: center;
+    padding: 30px 20px;
+    border-top: 1px solid rgba(139, 92, 246, 0.2);
+    color: #7c6f99;
+    font-size: 13px;
+  }
+  .footer strong { color: #d4af37; }
+  .tab-section {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .tab {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .tab-required { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+  .tab-optional { background: rgba(139, 92, 246, 0.15); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3); }
+  .tab-done { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>LottoZen Ultra - Guía de Publicación en Google Play Store</h1>
+  <p>Guía paso a paso completa - Versión 2.1.0 - 14 de Noviembre 2026</p>
+</div>
+
+<div class="container">
+
+  <!-- FASE 0: Estado actual -->
+  <div class="phase">
+    <div class="phase-title">
+      <div class="phase-number">0</div>
+      <h2>Estado Actual del Proyecto (Ya Configurado)</h2>
+    </div>
+    <div class="phase-content">
+      <div class="tab-section">
+        <span class="tab tab-done">appId: com.lottozen.ultra</span>
+        <span class="tab tab-done">targetSdk 35</span>
+        <span class="tab tab-done">minSdk 24</span>
+        <span class="tab tab-done">versionCode 3</span>
+        <span class="tab tab-done">versionName 2.1.0</span>
+      </div>
+      <p>Estos elementos ya están configurados en el proyecto:</p>
+      <ul>
+        <li>AndroidManifest.xml con permisos mínimos (INTERNET + ACCESS_NETWORK_STATE)</li>
+        <li>network_security_config.xml (sin cleartext traffic en producción)</li>
+        <li>build.gradle con compileSdk 35, bundle config para AAB</li>
+        <li>Proguard rules configurados para WebView</li>
+        <li>Gradle 8.7 + AGP 8.3.2</li>
+        <li>Iconos en todas las densidades (mdpi a xxxhdpi)</li>
+        <li>Splash screen con colors.xml y styles.xml</li>
+        <li>MainActivity.java con WebView configurado</li>
+        <li>Web assets ya sincronizados a android/app/src/main/assets/</li>
+        <li>Disclaimer de juego responsable en el footer de la app</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- FASE 1: Android Studio -->
+  <div class="phase">
+    <div class="phase-title">
+      <div class="phase-number">1</div>
+      <h2>Instalar Android Studio (si no lo tienes)</h2>
+    </div>
+    <div class="phase-content">
+      <h3>Descargar Android Studio</h3>
+      <ol>
+        <li>Ve a <strong>https://developer.android.com/studio</strong></li>
+        <li>Descarga la versión más reciente (Hedgehog 2023.1 o superior)</li>
+        <li>Ejecuta el instalador y sigue los pasos por defecto</li>
+        <li>Al abrir Android Studio por primera vez, te pedirá descargar el Android SDK - acepta todo</li>
+        <li>Asegúrate de que el <strong>SDK Platform Android 15 (API 35)</strong> esté instalado</li>
+      </ol>
+      <h3>Verificar SDK 35</h3>
+      <p>En Android Studio: Tools → SDK Manager → marca "Android 15.0 (API 35)" → Apply</p>
+      <div class="warning">
+        IMPORTANTE: Necesitas JDK 17. Android Studio lo incluye automáticamente, pero si usas
+        Gradle desde línea de comandos, verifica con: <code>java -version</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- FASE 2: Abrir proyecto -->
+  <div class="phase">
+    <div class="phase-title">
+      <div class="phase-number">2</div>
+      <h2>Abrir el Proyecto en Android Studio</h2>
+    </div>
+    <div class="phase-content">
+      <ol>
+        <li>Abre Android Studio</li>
+        <li>Selecciona <strong>"Open"</strong> (no "New Project")</li>
+        <li>Navega a la carpeta: <code>C:\Users\Victor M.F. Avilan\WorkBuddy AI\2026-10-30-11-58-06\LottoZen-Ultra\android</code></li>
+        <li>Selecciona la carpeta <strong>android</strong> y haz clic en OK</li>
+        <li>Android Studio empezará a sincronizar Gradle - espera a que termine (puede tardar 5-10 minutos la primera vez)</li>
+        <li>Si pide actualizar Gradle o AGP, acepta la actualización sugerida</li>
+      </ol>
+      <div class="success">
+        Cuando veas "BUILD SUCCESSFUL" o "Sync finished" en la parte inferior, el proyecto está listo.
+      </div>
+    </div>
+  </div>
+
+  <!-- FASE 3: Crear Keystore -->
+  <div class="phase">
+    <div class="phase-title">
+      <div class="phase-number">3</div>
+      <h2>Crear tu Keystore de Firma (CRÍTICO)</h2>
+    </div>
+    <div class="phase-content">
+      <div class="warning">
+        Este paso es OBLIGATORIO. Sin un keystore propio, no puedes publicar en Google Play.
+        El keystore actual usa el debug keystore que NO es válido para publicación.
+      </div>
+      <h3>Opción A: Crear keystore desde línea de comandos</h3>
+      <p>Abre una terminal (Git Bash o Command Prompt) y ejecuta:</p>
+      <div class="code-block">keytool -genkey -v -keystore lottozen-release.keystore -alias lottozen -keyalg RSA -keysize 2048 -validity 10000</p></div>
+      <p>Te pedirá:</p>
+      <ul>
+        <li><strong>Keystore password:</strong> Elige una contraseña segura y GUÁRDALA</li>
+        <li><strong>Re-enter password:</strong> Repítela</li>
+        <li><strong>First and last name:</strong> Victor M.F. Avilan</li>
+        <li><strong>Organizational unit:</strong> Desarrollo</li>
+        <li><strong>Organization name:</strong> LottoZen Ultra</li>
+        <li><strong>City:</strong> Tu ciudad</li>
+        <li><strong>State:</strong> Tu provincia/estado</li>
+        <li><strong>Country code:</strong> ES (para España)</li>
+        <li><strong>Key password for lottozen:</strong> Puede ser la misma o diferente - GUÁRDALA</li>
+      </ul>
+
+      <h3>Opción B: Crear keystore desde Android Studio (más fácil)</h3>
+      <ol>
+        <li>En Android Studio: <strong>Build → Generate Signed Bundle / APK</strong></li>
+        <li>Selecciona <strong>Android App Bundle</strong> → Next</li>
+        <li>En "Key store path", haz clic en <strong>"Create new..."</strong></li>
+        <li>Elige dónde guardar el keystore (ej: <code>C:\keystores\lottozen-release.keystore</code>)</li>
+        <li>Completa todos los campos (password, alias, nombre, organización, etc.)</li>
+        <li>Haz clic en <strong>OK</strong></li>
+      </ol>
+
+      <h3>Configurar el keystore en build.gradle</h3>
+      <p>Una vez tengas tu keystore, edita <code>android/app/build.gradle</code> y reemplaza el signingConfigs.release:</p>
+      <div class="code-block">signingConfigs {
+    release {
+        storeFile file('C:/keystores/lottozen-release.keystore')
+        storePassword 'TU_PASSWORD_KEystore'
+        keyAlias 'lottozen'
+        keyPassword 'TU_PASSWORD_KEY'
+    }
+}</div>
+
+      <div class="warning">
+        GUARDA TU KEYSTORE EN UN LUGAR SEGURO. Si pierdes el keystore, NUNCA podrás
+        actualizar la app en Google Play con el mismo package name. Haz una copia de seguridad.
+      </div>
+    </div>
+  </div>
+
+  <!-- FASE 4: Generar AAB -->
+  <div class="phase">
+    <div class="phase-title">
+      <div class="phase-number">4</div>
+      <h2>Generar el AAB (Android App Bundle)</h2>
+    </div>
+    <div class="phase-content">
+      <p>Google Play requiere formato <strong>.aab</strong> (no .apk) para nuevas apps.</p>
+
+      <h3>Opción A: Desde Android Studio (recomendado)</h3>
+      <ol>
+        <li><strong>Build → Generate Signed Bundle / APK</strong></li>
+        <li>Selecciona <strong>Android App Bundle</strong> → Next</li>
+        <li>Selecciona tu keystore e ingresa las contraseñas → Next</li>
+        <li>Selecciona <strong>release</strong> → Finish</li>
+        <li>Espera a que compile (puede tardar 2-5 minutos)</li>
+        <li>Cuando termine, haz clic en <strong>"locate"</strong> para encontrar el archivo .aab</li>
+      </ol>
+
+      <h3>Opción B: Desde línea de comandos</h3>
+      <p>Primero asegúrate de haber hecho el build web y sync:</p>
+      <div class="code-block">cd "C:\Users\Victor M.F. Avilan\WorkBuddy AI\2026-10-30-11-58-06\LottoZen-Ultra"
+npm run build
+cp -r dist/* android/app/src/main/assets/
+cd android
+./gradlew bundleRelease</div>
+      <p>El archivo .aab estará en:</p>
+      <div class="code-block">android/app/build/outputs/bundle/release/app-release.aab</div>
+
+      <div class="success">
+        El AAB generado será de aproximadamente 300-500 KB (app muy ligera).
+      </div>
+    </div>
+  </div>
+
+  <!-- FASE 5: Probar el AAB -->
+  <div class="phase">
+    <div class="phase-title">
+      <div class="phase-number">5</div>
+      <h2>Probar el Build antes de Subir</h2>
+    </div>
+    <div class="phase-content">
+      <h3>Probar en emulador</h3>
+      <ol>
+        <li>En Android Studio: <strong>Tools → Device Manager</strong></li>
+        <li>Crea un emulador (ej: Pixel 7 con Android 14 o 15)</li>
+        <li>Ejecuta: <strong>Run → Run 'app'</strong> o el botón verde ▶</li>
+        <li>Verifica que la app se abre correctamente, muestra el campo de estrellas, y todas las funciones funcionan</li>
+      </ol>
+      <h3>Probar el AAB con bundletool (opcional)</h3>
+      <p>Si quieres probar el .aab exacto en un dispositivo:</p>
+      <div class="code-block">bundletool build-apks --bundle=app-release.aab --output=app.apks --connected-device
+bundletool install-apks --apks=app.apks</div>
+    </div>
+  </div>
+
+  <!-- FASE 6: Google Play Console -->
+  <div class="phase">
+    <div class="phase-title">
+      <div class="phase-number">6</div>
+      <h2>Crear Cuenta de Google Play Console</h2>
+    </div>
+    <div class="phase-content">
+      <ol>
+        <li>Ve a <strong>https://play.google.com/console</strong></li>
+        <li>Inicia sesión con tu cuenta de Google</li>
+        <li>Paga la tarifa única de <strong>$25 USD</strong> (con tarjeta de crédito/débito)</li>
+        <li>Completa tu perfil de desarrollador:
+          <ul>
+            <li><strong>Nombre de desarrollador:</strong> Victor M.F. Avilan</li>
+            <li><strong>Email de contacto:</strong> tu email</li>
+            <li><strong>Sitio web:</strong> (opcional)</li>
+            <li><strong>Teléfono:</strong> tu número</li>
+          </ul>
+        </li>
+        <li>Verifica tu identidad (puede tardar 1-3 días en aprobarse)</li>
+      </ol>
+      <div class="warning">
+        La verificación de identidad es OBLIGATORIA antes de poder publicar apps.
+        Google puede pedir documento de identidad y foto.
+      </div>
+    </div>
+  </div>
+
+  <!-- FASE 7: Crear la app -->
+  <div class="phase">
+    <div class="phase-title">
+      <div class="phase-number">7</div>
+      <h2>Crear la App en Play Console</h2>
+    </div>
+    <div class="phase-content">
+      <ol>
+        <li>En Play Console, haz clic en <strong>"Crear app"</strong></li>
+        <li>Completa los detalles:
+          <ul>
+            <li><strong>Nombre de la app:</strong> LottoZen Ultra</li>
+            <li><strong>Idioma predeterminado:</strong> Español (España)</li>
+            <li><strong>App o juego:</strong> App</li>
+            <li><strong>Gratuita o de pago:</strong> Gratuita</li>
+          </ul>
+        </li>
+        <li>Acepta las declaraciones → <strong>Crear app</strong></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- FASE 8: Configurar ficha -->
+  <div class="phase">
+    <div class="phase-title">
+      <div class="phase-number">8</div>
+      <h2>Completar la Ficha de la Tienda (Store Listing)</h2>
+    </div>
+    <div class="phase-content">
+      <p>Ve a <strong>Configurar tu app → Detalles de la tienda</strong> (o "Main store listing")</p>
+
+      <h3>Detalles básicos</h3>
+      <ul>
+        <li><strong>Nombre de la app:</strong> LottoZen Ultra</li>
+        <li><strong>Nombre corto:</strong> LottoZen</li>
+        <li><strong>Descripción breve (80 caracteres):</strong> Numerologia cuantica predictiva para loteria - 18 sistemas</li>
+      </ul>
+
+      <h3>Descripción completa (máx 4000 caracteres)</h3>
+      <div class="code-block">LottoZen Ultra es la app definitiva de numerologia predictiva cuantica para analisis de loteria.
+
+Combina 18 sistemas avanzados de analisis para generar sugerencias de numeros personalizados segun tu perfil astrologico, numerologico y biorritmico:
+
+SISTEMAS COSMICOS (13):
+- Numerologia Pitagorica y Caldea
+- Astrologia (signo zodiacal, planetas, elementos)
+- Calendario Maya (Tzolkin, Kin galactico)
+- Cabala (Arbol sefiroditico)
+- Lo Shu (cuadrado magico chino)
+- Biorritmos (4 ciclos: fisico, emocional, intelectual, intuitivo)
+- Secuencia Fibonacci y Numero Aureo (Phi)
+- Ley de Benford (distribucion del primer digito)
+- Distribucion de Poisson (eventos raros)
+- Analisis Historico (numeros calientes/frios/retrasados)
+- Numero de Ano Personal (ciclos de 9 anos)
+
+MOTOR CUANTICO PREDICTIVO (5 sistemas nuevos):
+- Superposicion Cuantica (amplitudes con interferencia)
+- Entrelazamiento Numerologico (afinidad vibratoria)
+- Tiempo en Espiral (Penrose CCC + I Ching 64 hexagramas)
+- Realidades Alternativas (Many Worlds de Everett)
+- Resonancia Schumann (7.83 Hz - frecuencia terrestre)
+
+OPTIMIZADOR ESTRATEGICO:
+- Analisis de biorritmos de 30 dias
+- Recomendacion de CUANDO, COMO, CUAL y DONDE jugar
+- Calendario interactivo de energia
+- Top 5 mejores dias para jugar
+
+LOTERIAS SOPORTADAS (9):
+Euromillones, Primitiva, Bonoloto, El Gordo, ONCE Cupon, ONCE Triplex, Loteria Nacional, ONCE Super Once, Euromillon Dream.
+
+CARACTERISTICAS:
+- Generacion con PRNG criptografico (crypto.getRandomValues)
+- Perfil personalizado por fecha de nacimiento y nombre
+- Explicacion detallada de cada numero generado
+- Panel cuantico visual con hexagrama I Ching activo
+- Historias educativas rotativas
+- Funciona 100% offline (sin internet)
+- Tus datos se guardan solo en tu dispositivo
+
+IMPORTANTE: Esta app es SOLO para entretenimiento. Las loterias son juegos de azar. No existe metodo garantizado para ganar. Solo para mayores de 18 anos. Juega con responsabilidad.</div>
+
+      <h3>Imágenes de la tienda</h3>
+      <p>Necesitas capturas de pantalla y un icono:</p>
+      <ul class="checklist">
+        <li>Icono de la app: 512x512 px PNG (ya tienes icon-512.png)</li>
+        <li>Banner: 1024x500 px PNG (crear imagen promocional)</li>
+        <li>Mínimo 2 capturas de pantalla (teléfono: 1080x1920 o 16:9)</li>
+        <li>Recomendado: 4-8 capturas mostrando diferentes pantallas</li>
+      </ul>
+
+      <h3>Categorización</h3>
+      <ul>
+        <li><strong>Categoría:</strong> Entretenimiento</li>
+        <li><strong>Clasificación de contenido:</strong> Requerir clasificación (ver fase 9)</li>
+        <li><strong>Etiquetas:</strong> Numerologia, Loteria, Astrologia, Predicción</li>
+        <li><strong>Correo de contacto:</strong> tu email</li>
+        <li><strong>Política de privacidad:</strong> URL requerida (ver fase 10)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- FASE 9: Content Rating -->
+  <div class="phase">
+    <div class="phase-title">
+      <div class="phase-number">9</div>
+      <h2>Clasificación de Contenido (Content Rating)</h2>
+    </div>
+    <div class="phase-content">
+      <ol>
+        <li>Ve a <strong>Configurar tu app → Clasificación de contenido</strong></li>
+        <li>Selecciona <strong>"Iniciar cuestionario"</strong></li>
+        <li>Responde el cuestionario IARC:</li>
+      </ol>
+      <div class="code-block">P: ¿La app contiene violencia? → No
+P: ¿Contiene contenido sexual? → No
+P: ¿Contiene lenguaje soez? → No
+P: ¿Contiene apuestas con dinero real? → No (es solo predictiva, no permite apostar)
+P: ¿La app permite compras integradas? → No
+P: ¿Contiene anuncios? → No
+P: ¿Recolecta datos personales? → No (solo localStorage en dispositivo)</div>
+      <p>Con estas respuestas, la app recibirá clasificación <strong>PEGI 3+</strong> o <strong>Everyone</strong>.</p>
+      <div class="warning">
+        Aunque la app trata sobre lotería, NO permite apostar dinero real dentro de la app,
+        por lo que NO se considera "Gambling app". Es una herramienta de entretenimiento/numerología.
+      </div>
+    </div>
+  </div>
+
+  <!-- FASE 10: Privacy Policy -->
+  <div class="phase">
+    <div class="phase-title">
+      <div class="phase-number">10</div>
+      <h2>Política de Privacidad (OBLIGATORIA)</h2>
+    </div>
+    <div class="phase-content">
+      <p>Google Play requiere una URL pública con tu política de privacidad.</p>
+      <h3>Crear política de privacidad</h3>
+      <p>Puedes usar un generador gratuito como <strong>privacypolicies.com</strong> o crear una página simple.</p>
+      <p>Contenido mínimo necesario:</p>
+      <div class="code-block">POLÍTICA DE PRIVACIDAD - LottoZen Ultra
+
+Última actualización: 14 de noviembre 2026
+
+1. RECOLECCIÓN DE DATOS
+LottoZen Ultra NO recolecta, almacena ni transmite ningún dato personal
+a servidores externos. Toda la información del usuario (fecha de nacimiento,
+nombre, perfil) se almacena exclusivamente en el dispositivo mediante
+localStorage del navegador/WebView.
+
+2. PERMISOS DE LA APP
+- INTERNET: Solo para cargar recursos web si es necesario
+- ACCESS_NETWORK_STATE: Verificar conectividad
+La app funciona 100% offline.
+
+3. DATOS ALMACENADOS
+- Fecha de nacimiento (localStorage del dispositivo)
+- Nombre completo (localStorage del dispositivo)
+- Configuraciones del usuario (localStorage del dispositivo)
+Estos datos NUNCA se envían a ningún servidor.
+
+4. PUBLICIDAD
+La app NO contiene anuncios de ningún tipo.
+
+5. COMPRAS INTEGRADAS
+La app NO ofrece compras integradas.
+
+6. MENORES DE EDAD
+La app está diseñada para mayores de 18 años.
+
+7. CONTACTO
+Para preguntas sobre privacidad: [tu email]
+
+8. CAMBIOS
+Nos reservamos el derecho de actualizar esta política.</div>
+      <p>Sube este texto a una URL pública (puede ser un GitHub Page, un Google Site, o tu web).</p>
+      <p>Luego pega la URL en: <strong>Play Console → Detalles de la tienda → Política de privacidad</strong></p>
+    </div>
+  </div>
+
+  <!-- FASE 11: Target Audience -->
+  <div class="phase">
+    <div class="phase-title">
+      <div class="phase-number">11</div>
+      <h2>Audiencia Objetivo y Datos de Seguridad</h2>
+    </div>
+    <div class="phase-content">
+      <h3>Audiencia objetivo</h3>
+      <ol>
+        <li>Ve a <strong>Configurar tu app → Audiencia objetivo</strong></li>
+        <li>Edad objetivo: <strong>18+ o "Todas las edades"</strong> (la app no tiene contenido inapropiado)</li>
+        <li>Selecciona que la app NO está dirigida a niños menores de 13</li>
+      </ol>
+      <h3>Sección de datos (Data Safety)</h3>
+      <ol>
+        <li>Ve a <strong>Configurar tu app → Seguridad de datos</strong></li>
+        <li>Selecciona <strong>"No, la app no recolecta ni comparte datos"</strong></li>
+        <li>(Importante: aunque la app usa localStorage, Google no considera esto como "data collection" porque no se transmite a servidores)</li>
+      </ol>
+      <div class="success">
+        Al indicar que no recolectas datos, simplificas enormemente el proceso de aprobación.
+      </div>
+    </div>
+  </div>
+
+  <!-- FASE 12: Subir AAB -->
+  <div class="phase">
+    <div class="phase-title">
+      <div class="phase-number">12</div>
+      <h2>Subir el AAB a Google Play</h2>
+    </div>
+    <div class="phase-content">
+      <ol>
+        <li>Ve a <strong>Publicar tu app → Producción</strong> (o "Production")</li>
+        <li>Haz clic en <strong>"Crear versión nueva"</strong> (Create new release)</li>
+        <li>En "App bundles", arrastra o sube tu archivo <code>app-release.aab</code></li>
+        <li>Espera a que se procese (1-2 minutos)</li>
+        <li>En "Notas de la versión", escribe:</li>
+      </ol>
+      <div class="code-block">Versión 2.1.0 - Release inicial
+
+LottoZen Ultra - App predictiva de numerología cuántica para análisis de lotería.
+
+Características principales:
+- 18 sistemas integrados (13 cósmicos + 5 cuánticos)
+- 9 loterías soportadas
+- Optimizador estratégico con biorritmos
+- Motor cuántico con superposición, entrelazamiento y tiempo en espiral
+- Funciona 100% offline
+- Solo entretenimiento, +18 años</div>
+      <li>Revisa la lista de comprobación (todas las secciones deben estar en verde)</li>
+      <li>Haz clic en <strong>"Revisar versión"</strong></li>
+      <li>Haz clic en <strong>"Iniciar implementación en producción"</strong></li>
+    </div>
+  </div>
+
+  <!-- FASE 13: Revisión -->
+  <div class="phase">
+    <div class="phase-title">
+      <div class="phase-number">13</div>
+      <h2>Revisión de Google y Publicación</h2>
+    </div>
+    <div class="phase-content">
+      <p>Después de subir el AAB, Google revisará la app. El proceso:</p>
+      <ul>
+        <li><strong>Revisión automática:</strong> 1-2 horas (escaneo de malware, políticas)</li>
+        <li><strong>Revisión manual:</strong> 1-7 días (un revisor humano prueba la app)</li>
+        <li><strong>Primera publicación:</strong> Puede tardar hasta 7 días para apps nuevas</li>
+        <li><strong>Actualizaciones futuras:</strong> Generalmente 1-3 días</li>
+      </ul>
+      <div class="warning">
+        POSIBLES PROBLEMAS Y SOLUCIONES:
+        <ul>
+          <li><strong>"Viola política de apuestas":</strong> Asegúrate de que la app NO permite apostar dinero real. Es solo predictiva/numerológica. La descripción debe decir claramente "entretenimiento".</li>
+          <li><strong>"Política de privacidad faltante":</strong> La URL debe ser accesible públicamente</li>
+          <li><strong>"Icono no cumple":</strong> El icono 512x512 debe ser PNG sin transparencia</li>
+          <li><strong>"Targeting API baja":</strong> Ya configurado a API 35 (cumple)</li>
+        </ul>
+      </div>
+      <div class="success">
+        Cuando la app sea aprobada, aparecerá automáticamente en Google Play Store
+        con la URL: https://play.google.com/store/apps/details?id=com.lottozen.ultra
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKLIST FINAL -->
+  <div class="phase">
+    <div class="phase-title">
+      <div class="phase-number">14</div>
+      <h2>Checklist Final</h2>
+    </div>
+    <div class="phase-content">
+      <ul class="checklist">
+        <li>Android Studio instalado con SDK 35</li>
+        <li>Proyecto abierto y Gradle sincronizado sin errores</li>
+        <li>Keystore creado y guardado en lugar seguro</li>
+        <li>build.gradle configurado con tu keystore (no debug)</li>
+        <li>AAB generado: app-release.aab</li>
+        <li>App probada en emulador o dispositivo real</li>
+        <li>Cuenta de Google Play Console creada y verificada ($25)</li>
+        <li>App creada en Play Console</li>
+        <li>Ficha de tienda completada (descripción, iconos, capturas)</li>
+        <li>Clasificación de contenido completada</li>
+        <li>Política de privacidad publicada en URL pública</li>
+        <li>Audiencia objetivo configurada (+18)</li>
+        <li>Sección de seguridad de datos completada</li>
+        <li>AAB subido a producción</li>
+        <li>Versión enviada para revisión</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p><strong>Creado y diseñado por: Victor M.F. Avilan</strong></p>
+  <p>(c) Todos los derechos reservados - LottoZen Ultra v2.1.0</p>
+</div>
+
+</body>
+</html>

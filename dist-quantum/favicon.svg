@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#1e1238"/>
+      <stop offset="100%" stop-color="#0d0521"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f0d878"/>
+      <stop offset="100%" stop-color="#d4af37"/>
+    </linearGradient>
+    <linearGradient id="purple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <circle cx="256" cy="256" r="200" fill="none" stroke="url(#gold)" stroke-width="2" opacity="0.3"/>
+  <polygon points="256,140 284,228 376,228 302,282 328,370 256,316 184,370 210,282 136,228 228,228" fill="url(#gold)" opacity="0.85"/>
+  <circle cx="256" cy="256" r="75" fill="#0d0521" opacity="0.7"/>
+  <circle cx="256" cy="256" r="75" fill="none" stroke="url(#gold)" stroke-width="1.5" opacity="0.6"/>
+  <text x="256" y="250" text-anchor="middle" dominant-baseline="middle" font-family="Georgia,serif" font-size="48" font-weight="700" fill="url(#gold)">LZ</text>
+</svg>
